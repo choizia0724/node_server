@@ -8,9 +8,9 @@ on:
 
 env:
   OCIR_REGION: ap-chuncheon-1 # OCI 리전
-  OCIR_REPO: my-batch-job   # OCIR 저장소 이름
+  OCIR_REPO: my-batch-job # OCIR 저장소 이름
   OCIR_NAMESPACE: axsllws0weun # OCIR 테넌시 네임스페이스
-  OCI_USERNAME: stjyeon/oracleidentitycloudservice/st.jyeon@gmail.com # OCI 사용자 이름
+  OCI_USERNAME: ${{ env.OCIR_NAMESPACE }}/stjyeon/oracleidentitycloudservice/st.jyeon@gmail.com # OCI 사용자 이름
 
 jobs:
   build-and-push:
