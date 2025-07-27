@@ -21,7 +21,7 @@ jobs:
 
       - name: Set OCI Username
         id: set_oci_username
-        run: echo "OCI_USERNAME=${{ env.OCIR_NAMESPACE }}/stjyeon/oracleidentitycloudservice/st.jyeon@gmail.com" >> $GITHUB_ENV
+        run: echo "OCI_USERNAME=${{ env.OCIR_NAMESPACE }}/st.jyeon@gmail.com" >> $GITHUB_ENV
 
       - name: Log in to OCIR
         uses: docker/login-action@v3
