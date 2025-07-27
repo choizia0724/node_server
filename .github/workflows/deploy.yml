@@ -1,0 +1,39 @@
+# .github/workflows/deploy.yml
+name: Build and Push Docker Image to OCIR
+
+on:
+  push:
+    branches:
+      - main # main 브랜치에 푸시될 때마다 실행
+
+env:
+  OCIR_REGION: ap-chuncheon-1 # OCI 리전
+  OCIR_REPO: my-batch-job   # OCIR 저장소 이름
+  OCIR_NAMESPACE: axsllws0weun # OCIR 테넌시 네임스페이스
+  OCI_USERNAME: stjyeon/oracleidentitycloudservice/st.jyeon@gmail.com # OCI 사용자 이름
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest # GitHub 호스팅 러너 사용
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to OCIR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.OCIR_REGION }}.ocir.io
+          username: ${{ env.OCI_USERNAME }}
+          password: ${{ secrets.OCI_AUTH_TOKEN }} # GitHub Secrets에 저장된 인증 토큰 사용
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.OCIR_REGION }}.ocir.io/${{ env.OCIR_NAMESPACE }}/${{ env.OCIR_REPO }}:latest
+            ${{ env.OCIR_REGION }}.ocir.io/${{ env.OCIR_NAMESPACE }}/${{ env.OCIR_REPO }}:${{ github.sha }} # 커밋 SHA 태그도 함께 푸시
+          cache-from: type=gha # GitHub Actions 캐싱 활성화 (빌드 속도 향상)
+          cache-to: type=gha,mode=max
