@@ -1,12 +1,15 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+import express from 'express';
+import createError from 'http-errors';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+import indexRouter from './routes/index.js'; // .js 확장자 필수
+import usersRouter from './routes/users.js'; // .js 확장자 필수
 
+import connectDB from './src/services/connectDB.js'; // .js 확장자 필수
+
+const app = express();
 var app = express();
 
 // view engine setup
@@ -38,4 +41,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+export default app; 
