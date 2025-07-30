@@ -16,4 +16,4 @@ COPY . .
 # 애플리케이션이 리스닝하는 포트를 외부에 노출합니다.
 EXPOSE 3000
 
-CMD ["node", "src/index.js"]
+CMD ["node", "index.js"]
