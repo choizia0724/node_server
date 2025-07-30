@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 const adminPassword =
   process.env.MONGODB_ADMIN_PASSWORD || "your_admin_password";
 console.log(adminPassword);
-const MONGODB_URI = `mongodb://admin:${adminPassword}@host.docker.internal:27017/stock_app_db`;
+const MONGODB_URI = process.env.MONGO_URL || `mongodb://admin:${adminPassword}@host.docker.internal:27017/stock_app_db`;
 
 // MongoDB 연결 함수
 const connectDB = async () => {
