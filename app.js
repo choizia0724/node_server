@@ -10,7 +10,6 @@ import usersRouter from './routes/users.js'; // .js 확장자 필수
 import connectDB from './src/services/connectDB.js'; // .js 확장자 필수
 
 const app = express();
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
