@@ -31,6 +31,17 @@ pipeline {
             }
         }
 
+        stage('Prepare kubectl') { // 새로운 스테이지: kubectl 준비
+            steps {
+                echo 'Downloading kubectl...'
+                script {
+                    // kubectl 다운로드 및 실행 권한 부여
+                    sh 'curl -LO https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl'
+                    sh 'chmod +x kubectl'
+                }
+            }
+        }
+
         stage('Deploy to Kubernetes') { // 3단계: Kubernetes에 배포
             steps {
                 echo 'Deploying to Kubernetes...'
