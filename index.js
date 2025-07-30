@@ -1,7 +1,7 @@
 // /app/index.js (또는 app.js)
 
 import express, { json } from "express";
-import connectDB from "./src/services/connectDB"; // MongoDB 연결 함수
+import connectDB from "./src/services/connectDB.js"; // MongoDB 연결 함수
 
 const app = express();
 const PORT = process.env.PORT || 3000; // 환경 변수 PORT가 없으면 3000 사용
