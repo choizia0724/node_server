@@ -1,61 +1,58 @@
-// Jenkinsfile (간단한 예시)
+// Jenkinsfile
 pipeline {
-    agent any // 어떤 Jenkins 에이전트(작업자)든 사용
+    agent any 
+    // 환경 변수 정의
+    environment {
+        APP_NAME = 'node-server-app'
+    }
 
     stages {
-        stage('Checkout Code') { // 1단계: 코드 체크아웃 (Git 연동 시 자동으로 됨)
+        stage('Checkout Code') { // 1단계: GitHub 저장소에서 코드 가져오기
             steps {
-                echo 'Checking out code...'
-                // 여기서 SCM (Git)에서 코드를 가져옵니다.
-                // Pipeline script from SCM을 사용하면 Jenkins가 자동으로 처리
-                // sh 'git clone <your-repo-url>' // 수동으로 한다면 이런 식
+                echo 'Checking out code from GitHub...'
+                git branch: 'main', url: 'https://github.com/choizia0724/node_server.git'
+            
+                echo 'Code successfully checked out.'
             }
         }
-        stage('Build') { // 2단계: 애플리케이션 빌드 (예: Node.js)
-            steps {
-                echo 'Building the application...'
-                // 여기에 실제 백엔드 빌드 명령어를 넣습니다.
-                // 예: Node.js 프로젝트의 경우
-                // sh 'npm install'
-                // sh 'npm run build' // 또는 'yarn install', 'yarn build'
 
-                // 예: Java Maven 프로젝트의 경우
-                // sh 'mvn clean package'
-
-                // 예: Python 프로젝트의 경우
-                // sh 'pip install -r requirements.txt'
-                // sh 'python manage.py collectstatic --noinput'
-            }
-        }
-        stage('Build Docker Image') { // 3단계: Docker 이미지 빌드
+      stage('Build Docker Image') { // 2단계: Docker 이미지 빌드
             steps {
-                echo 'Building Docker image...'
-                // 프로젝트 루트에 Dockerfile이 있다고 가정
-                // Jenkins 컨테이너는 호스트의 Docker 데몬에 접근할 수 있습니다.
-                sh 'docker build -t my-backend-app:latest .'
-                sh 'docker images' // 빌드된 이미지 확인
+                echo 'Building Docker image from Dockerfile...'
+                script {
+                    // 이미지 태그 생성 (latest 및 Jenkins 빌드 번호)
+                    def imageTagLatest = "${env.APP_NAME}:latest"
+                
+                    def imageTagBuild = "${env.APP_NAME}:${env.BUILD_NUMBER}"
+
+                    sh "docker build -t ${imageTagLatest} -t ${imageTagBuild} ."
+                    echo "Docker images built: ${imageTagLatest}, ${imageTagBuild}"
+                }
             }
         }
-        stage('Deploy to Kubernetes') { // 4단계: Kubernetes에 배포
+
+        stage('Deploy to Kubernetes') { // 3단계: Kubernetes에 배포
             steps {
                 echo 'Deploying to Kubernetes...'
-                // Kubernetes YAML 파일을 적용합니다.
-                // 프로젝트 루트에 kubernetes/deployment.yaml 파일이 있다고 가정
+                
                 sh 'kubectl apply -f kubernetes/deployment.yaml'
-                sh 'kubectl get pods' // 배포된 Pod 확인
+        
+                sh "kubectl get pods -l app=${env.APP_NAME}" 
+                sh 'kubectl get services'   
+                echo 'Deployment to Kubernetes complete.'
             }
         }
     }
 
-    post { // 빌드 후 처리
+    post { // 파이프라인 완료 후 처리
         always {
             echo 'Pipeline finished.'
         }
         success {
-            echo 'Build successful!'
+            echo 'Build and deployment successful!'
         }
         failure {
-            echo 'Build failed!'
+            echo 'Build or deployment failed! Check console output for details.'
         }
     }
 }

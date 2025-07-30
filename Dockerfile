@@ -1,17 +1,19 @@
 # Dockerfile
-FROM node:20-alpine 
-# Node.js 20 버전의 Alpine Linux 이미지 사용
+# Node.js 22 버전의 Alpine 리눅스 기반 이미지를 사용합니다. (경량화된 이미지)
+FROM node:22-alpine
 
-WORKDIR /app 
-# 작업 디렉토리 설정
+# 컨테이너 내에서 애플리케이션의 작업 디렉토리를 /app으로 설정합니다.
+WORKDIR /app
 
-COPY package.json ./ 
-# package.json 파일 복사
-RUN npm install --production  
-# 의존성 설치 (생산 환경용)
+# package.json과 package-lock.json 파일을 먼저 복사합니다.
+COPY package*.json ./
 
-COPY script.js ./  
-# 스크립트 파일 복사
+# Node.js 의존성(모듈)을 설치합니다.
+RUN npm install --production
 
-CMD ["node", "script.js"]   
-# 컨테이너 시작 시 실행할 명령어 설정
+COPY . .
+
+# 애플리케이션이 리스닝하는 포트를 외부에 노출합니다.
+EXPOSE 3000
+
+CMD ["node", "src/index.js"]
