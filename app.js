@@ -7,7 +7,6 @@ import logger from "morgan";
 import indexRouter from "./routes/index.js"; // .js 확장자 필수
 import usersRouter from "./routes/users.js"; // .js 확장자 필수
 
-import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
