@@ -16,17 +16,6 @@ spec:
         app: node-server-app # Pod 레이블 (Service와 연결에 사용)
     spec:
       containers:
-      env: # 환경 변수 설정
-        - name: API_KEY # API 키 환경 변수
-          valueFrom:
-            secretKeyRef:
-              name: key-secret # Secret 이름
-              key: data-api-key # Secret
-        - name: MONGODB_ADMIN_PASSWORD # MongoDB 관리자 비밀번호 환경 변수
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret # Secret 이름
-              key: mongo-root-password # Secret 키
         - name: node-server-container # 컨테이너 이름
           image: node-server-app:latest # Jenkins가 빌드할 이미지 이름 (OCIR 주소 없음)
           ports:
@@ -38,3 +27,14 @@ spec:
             limits:
               cpu: "500m" # 0.5 vCPU
               memory: "512Mi" # 512 MB
+          env: # 환경 변수 설정
+            - name: API_KEY # API 키 환경 변수
+              valueFrom:
+                secretKeyRef:
+                  name: key-secret # Secret 이름
+                  key: data-api-key # Secret
+            - name: MONGODB_ADMIN_PASSWORD # MongoDB 관리자 비밀번호 환경 변수
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret # Secret 이름
+                  key: mongo-root-password # Secret 키
