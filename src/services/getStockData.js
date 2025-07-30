@@ -51,12 +51,12 @@ const getStockData = async () => {
           };
 
           // 존재하면 업데이트, 없으면 생성 (upsert)
-          await Stock.findOneAndUpdate(
-            { symbol: stockData.symbol, basDt: stockData.basDt },
-            // 기준 필드
-            stockData,
-            { upsert: true, new: true }
-          );
+          // await Stock.findOneAndUpdate(
+          //   { symbol: stockData.symbol, basDt: stockData.basDt },
+          //   // 기준 필드
+          //   stockData,
+          //   { upsert: true, new: true }
+          // );
         }
         console.log("Stock data successfully saved to the database.");
       } else {
