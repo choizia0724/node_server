@@ -1,5 +1,5 @@
-import getStockData from "./src/services/getStockData";
-import connectDB from "./src/services/connectDB";
+import getStockData from "./src/services/getStockData.js";
+import connectDB from "./src/services/connectDB.js";
 
 connectDB()
   .then(() => {
