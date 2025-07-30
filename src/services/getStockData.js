@@ -1,6 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
-dotenv.config(); // .env 파일의 환경변수를 process.env에 등록
+
 
 // Get last week's Monday and format as 'YYYYMMDD'
 function getLastWeekMonday() {
