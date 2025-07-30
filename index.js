@@ -11,12 +11,6 @@ connectDB()
     // await getStockData();
     // console.log("Initial stock data processing completed.");
 
-    app.listen(PORT, () => {
-      console.log(`Express server listening on port ${PORT}`);
-      console.log(
-        `Access the app at http://localhost:${PORT} (if port forwarding is set up)`
-      );
-    });
   })
   .catch((dbError) => {
     console.error("Database initial connection failed:", dbError);
