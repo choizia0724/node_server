@@ -1,36 +1,35 @@
-# kubernetes/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-server-deployment # 배포 이름
+  name: node-server-deployment
   labels:
-    app: node-server-app # 앱 레이블 (Service와 연결에 사용)
+    app: node-server-app
 spec:
-  replicas: 1 # 실행할 Pod 개수 (테스트 환경이므로 1개로 시작)
+  replicas: 1
   selector:
     matchLabels:
       app: node-server-app
   template:
     metadata:
       labels:
-        app: node-server-app # Pod 레이블 (Service와 연결에 사용)
+        app: node-server-app
     spec:
       containers:
-        - name: node-server-container # 컨테이너 이름
-          image: node-server-app:latest # Jenkins가 빌드할 이미지 이름
+        - name: node-server-container
+          image: node-server-app:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 3000 # 컨테이너가 노출할 포트 (Node.js 서버 포트)
-          resources: # 리소스 요청 및 제한 (필요시 조정)
+            - containerPort: 3000
+          resources:
             requests:
-              cpu: "250m" # 0.25 vCPU
-              memory: "256Mi" # 256 MB
+              cpu: "250m"
+              memory: "256Mi"
             limits:
-              cpu: "500m" # 0.5 vCPU
-              memory: "512Mi" # 512 MB
-          env: # 환경 변수 설정
-            - name: API_KEY # API 키 환경 변수
+              cpu: "500m"
+              memory: "512Mi"
+          env:
+            - name: API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: key-secret # Secret 이름
-                  key: data-api-key # Secret
+                  name: key-secret
+                  key: data-api-key
