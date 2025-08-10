@@ -20,16 +20,16 @@ pipeline {
         steps {
             echo 'Building Docker image from Dockerfile...'
             script {
-                def imageTagLatest = "${env.APP_NAME}:latest"
-                def imageTagBuild = "${env.APP_NAME}:${env.BUILD_NUMBER}"
+                def imageTagLatest = "docker.io/library/${env.APP_NAME}:latest"
+                def imageTagBuild  = "docker.io/library/${env.APP_NAME}:${env.BUILD_NUMBER}"
 
                 sh "docker build -t ${imageTagLatest} -t ${imageTagBuild} ."
                 echo "Docker images built: ${imageTagLatest}, ${imageTagBuild}"
 
-                // containerd에 이미지 로드 (k3s가 인식하게)
+                // k3s containerd에 이미지 바로 로드
                 sh """
                 docker save ${imageTagLatest} -o ${env.APP_NAME}.tar
-                sudo ctr images import ${env.APP_NAME}.tar
+                ctr --address /run/k3s/containerd/containerd.sock images import ${env.APP_NAME}.tar
                 rm -f ${env.APP_NAME}.tar
                 """
             }
