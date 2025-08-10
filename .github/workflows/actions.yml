@@ -17,6 +17,4 @@ jobs:
           JENKINS_BUILD_TOKEN: ${{ secrets.JENKINS_BUILD_TOKEN }}
           JENKINS_USER: ${{ secrets.JENKINS_USER }}
         run: |
-          CRUMB=$(curl -s "${JENKINS_URL}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)" --user "${JENKINS_USER}:${JENKINS_TOKEN}")
-
-          curl -X POST "${JENKINS_URL}/job/${JENKINS_JOB}/build?token=${JENKINS_BUILD_TOKEN}" -H "${CRUMB}" --user "${JENKINS_USER}:${JENKINS_TOKEN}"
+          curl -X POST "http://${JENKINS_USER}:${JENKINS_TOKEN}@${JENKINS_URL}/job/${JENKINS_JOB}/build?token=${JENKINS_BUILD_TOKEN}"
