@@ -23,7 +23,12 @@ pipeline {
                     sh "docker build -t ${imageTagLatest} -t ${imageTagBuild} ."
                     echo "Docker images built: ${imageTagLatest}, ${imageTagBuild}"
 
-                    // minikube 환경이면 containerd import는 불필요함
+                    // k3s containerd에 이미지 바로 로드 (sudo 필요)
+                    sh """
+                    docker save ${imageTagLatest} -o ${env.APP_NAME}.tar
+                    sudo ctr --address /run/k3s/containerd/containerd.sock images import ${env.APP_NAME}.tar
+                    rm -f ${env.APP_NAME}.tar
+                    """
                 }
             }
         }
