@@ -1,4 +1,5 @@
 import axios from "axios";
+import { connectDB } from "./connectDB";
 
 // Get last week's Monday and format as 'YYYYMMDD'
 function getLastWeekMonday() {
