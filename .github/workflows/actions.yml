@@ -17,4 +17,4 @@ jobs:
           JENKINS_BUILD_TOKEN: ${{ secrets.JENKINS_BUILD_TOKEN }}
           JENKINS_USER: ${{ secrets.JENKINS_USER }}
         run: |
-          curl -X POST "http://${JENKINS_USER}:${JENKINS_TOKEN}@${JENKINS_URL}/job/${JENKINS_JOB}/build?token=${JENKINS_BUILD_TOKEN}"
+          curl -X POST "http://${JENKINS_USER}:${JENKINS_TOKEN}@${JENKINS_SERVER}/job/${JENKINS_JOB}/build?token=${JENKINS_BUILD_TOKEN}"
