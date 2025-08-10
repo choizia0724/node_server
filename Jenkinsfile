@@ -46,11 +46,7 @@ pipeline {
             steps {
                 echo 'Deploying to Kubernetes...'
                 
-                sh '''
-                kubectl create -f kubernetes/deployment.yaml || kubectl apply -f kubernetes/deployment.yaml
-                kubectl create -f kubernetes/service.yaml || kubectl apply -f kubernetes/service.yaml
-                '''
-
+                sh 'kubectl apply -f kubernetes/deployment.yaml'
                 sh "kubectl get pods -l app=${env.APP_NAME}" 
                 sh 'kubectl get services'   
                 echo 'Deployment to Kubernetes complete.'

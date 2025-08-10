@@ -18,7 +18,7 @@ spec:
       containers:
         - name: node-server-container # 컨테이너 이름
           image: node-server-app:latest # Jenkins가 빌드할 이미지 이름 (OCIR 주소 없음)
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
           ports:
             - containerPort: 3000 # 컨테이너가 노출할 포트 (Node.js 서버 포트)
           resources: # 리소스 요청 및 제한 (필요시 조정)
