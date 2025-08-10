@@ -1,12 +1,12 @@
 # Dockerfile
-FROM node:22
+FROM node:22-bullseye
 
 
 # Oracle Instant Client 설치
 RUN apt-get update && apt-get install -y unzip libaio1 wget \
-    && wget https://download.oracle.com/otn_software/linux/instantclient/2119000/instantclient-basic-linux.x64-21.19.0.0.0dbru.zip \
-    && unzip instantclient-basic-linux.x64-21.19.0.0.0dbru.zip -d /opt/oracle/ \
-    && rm instantclient-basic-linux.x64-21.19.0.0.0dbru.zip \
+    && wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux.x64-21.9.0.0.0.zip \
+    && unzip instantclient-basiclite-linux.x64-21.9.0.0.0.zip -d /opt/oracle/ \
+    && rm instantclient-basiclite-linux.x64-21.9.0.0.0.zip \
     && ln -s /opt/oracle/instantclient_21_9 /opt/oracle/instantclient
 
 ENV LD_LIBRARY_PATH=/opt/oracle/instantclient:$LD_LIBRARY_PATH
