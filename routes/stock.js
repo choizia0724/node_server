@@ -1,4 +1,5 @@
 import { Router } from "express";
+import connectDB from "../services/db.js";
 var router = Router();
 
 /* GET stock listing. */
