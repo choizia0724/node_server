@@ -1,6 +1,4 @@
 import axios from "axios";
-import dotenv from "dotenv";
-
 
 // Get last week's Monday and format as 'YYYYMMDD'
 function getLastWeekMonday() {
@@ -35,29 +33,50 @@ const getStockData = async () => {
     .then(async (response) => {
       if (response.status === 200) {
         const data = response.data.response.body.items.item;
+        const connection = await connectDB();
 
-        const Stock = (await import("../models/stock.js")).default;
-        // Stock 모델 가져오기
+        const mergeSql = `
+MERGE INTO stock_table target
+USING (SELECT :symbol AS symbol, :name AS name, TO_DATE(:basDt, 'YYYYMMDD') AS basDt,
+              :isinCd AS isinCd, :mrktCtg AS mrktCtg, :crno AS crno, :corpNm AS corpNm
+       FROM dual) source
+ON (target.symbol = source.symbol AND target.basDt = source.basDt)
+WHEN MATCHED THEN
+  UPDATE SET 
+    name = source.name,
+    isinCd = source.isinCd,
+    mrktCtg = source.mrktCtg,
+    crno = source.crno,
+    corpNm = source.corpNm
+WHEN NOT MATCHED THEN
+  INSERT (symbol, name, basDt, isinCd, mrktCtg, crno, corpNm)
+  VALUES (source.symbol, source.name, source.basDt, source.isinCd, source.mrktCtg, source.crno, source.corpNm)
+`;
+
         for (const item of data) {
-          // 데이터베이스에 저장할 객체 생성
           const stockData = {
-            symbol: item.srtnCd, // srtnCd (단축코드)
-            name: item.itmsNm, // itmsNm (종목 한글명)
-            basDt: item.basDt, // 기준일자
-            isinCd: item.isinCd, // ISIN 코드
-            mrktCtg: item.mrktCtg, // 시장 구분
-            crno: item.crno, // 법인등록번호
-            corpNm: item.corpNm, // 법인명
+            symbol: item.srtnCd,
+            name: item.itmsNm,
+            basDt: item.basDt,
+            isinCd: item.isinCd,
+            mrktCtg: item.mrktCtg,
+            crno: item.crno,
+            corpNm: item.corpNm,
           };
 
-          // 존재하면 업데이트, 없으면 생성 (upsert)
-          // await Stock.findOneAndUpdate(
-          //   { symbol: stockData.symbol, basDt: stockData.basDt },
-          //   // 기준 필드
-          //   stockData,
-          //   { upsert: true, new: true }
-          // );
+          await connection.execute(mergeSql, {
+            symbol: stockData.symbol,
+            name: stockData.name,
+            basDt: stockData.basDt,
+            isinCd: stockData.isinCd,
+            mrktCtg: stockData.mrktCtg,
+            crno: stockData.crno,
+            corpNm: stockData.corpNm,
+          });
         }
+
+        await connection.commit();
+
         console.log("Stock data successfully saved to the database.");
       } else {
         console.error("Error fetching stock data:", response.statusText);

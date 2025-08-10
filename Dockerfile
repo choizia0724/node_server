@@ -2,6 +2,17 @@
 # Node.js 22 버전의 Alpine 리눅스 기반 이미지를 사용합니다. (경량화된 이미지)
 FROM node:22-alpine
 
+
+# Oracle Instant Client 설치
+RUN apt-get update && apt-get install -y unzip libaio1 wget \
+ && wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux.x64-21.9.0.0.0.zip \
+ && unzip instantclient-basiclite-linux.x64-21.9.0.0.0.zip -d /opt/oracle/ \
+ && rm instantclient-basiclite-linux.x64-21.9.0.0.0.zip \
+ && ln -s /opt/oracle/instantclient_21_9 /opt/oracle/instantclient
+
+ENV LD_LIBRARY_PATH=/opt/oracle/instantclient:$LD_LIBRARY_PATH
+ENV PATH=/opt/oracle/instantclient:$PATH
+
 # 컨테이너 내에서 애플리케이션의 작업 디렉토리를 /app으로 설정합니다.
 WORKDIR /app
 

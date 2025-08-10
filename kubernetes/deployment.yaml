@@ -33,3 +33,13 @@ spec:
                 secretKeyRef:
                   name: key-secret
                   key: data-api-key
+            - name: TNS_ADMIN
+              value: /app/wallet
+          volumeMounts:
+            - name: wallet-volume
+              mountPath: /app/wallet
+      volumes:
+        - name: wallet-volume
+          hostPath:
+            path: /home/opc/wallet
+            type: Directory

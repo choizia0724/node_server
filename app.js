@@ -3,9 +3,11 @@ import createError from "http-errors";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import cron from "node-cron";
 
 import indexRouter from "./routes/index.js"; // .js 확장자 필수
 import usersRouter from "./routes/users.js"; // .js 확장자 필수
+import stockRouter from "./routes/stock.js"; // .js 확장자 필수
 
 import { fileURLToPath } from "url";
 
@@ -24,8 +26,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+//controller
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/stock", stockRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -41,6 +45,16 @@ app.use(function (err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render("error");
+});
+
+// Cron job to fetch stock data everyday at 00:00
+cron.schedule("0 0 * * *", async () => {
+  try {
+    const getStockData = (await import("./services/getStockData.js")).default;
+    await getStockData();
+  } catch (error) {
+    console.error("Error fetching stock data:", error);
+  }
 });
 
 export default app;
