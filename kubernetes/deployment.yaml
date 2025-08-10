@@ -35,6 +35,16 @@ spec:
                   key: data-api-key
             - name: TNS_ADMIN
               value: /app/wallet
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db_user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db_password
           volumeMounts:
             - name: wallet-volume
               mountPath: /app/wallet
