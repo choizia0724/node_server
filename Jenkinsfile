@@ -26,7 +26,7 @@ pipeline {
                     // k3s containerd에 이미지 바로 로드 (sudo 필수)
                     sh """
                     docker save ${imageTagLatest} -o ${env.APP_NAME}.tar
-                    sudo k3s ctr images import ${env.APP_NAME}.tar
+                    sudo /usr/local/bin/k3s ctr images import ${env.APP_NAME}.tar
                     rm -f ${env.APP_NAME}.tar
                     """
                 }
