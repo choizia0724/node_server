@@ -16,20 +16,26 @@ pipeline {
             }
         }
 
-      stage('Build Docker Image') { // 2단계: Docker 이미지 빌드
+        stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image from Dockerfile...'
                 script {
-                    // 이미지 태그 생성 (latest 및 Jenkins 빌드 번호)
                     def imageTagLatest = "${env.APP_NAME}:latest"
-                
                     def imageTagBuild = "${env.APP_NAME}:${env.BUILD_NUMBER}"
 
                     sh "docker build -t ${imageTagLatest} -t ${imageTagBuild} ."
                     echo "Docker images built: ${imageTagLatest}, ${imageTagBuild}"
+
+                    // containerd에 이미지 로드 (k3s가 인식하게)
+                    sh """
+                    docker save ${imageTagLatest} -o ${env.APP_NAME}.tar
+                    sudo ctr images import ${env.APP_NAME}.tar
+                    rm -f ${env.APP_NAME}.tar
+                    """
                 }
             }
         }
+
 
         stage('Prepare kubectl') { // 새로운 스테이지: kubectl 준비
             steps {
