@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: node-server-container # 컨테이너 이름
-          image: docker.io/library/node-server-app:latest # Jenkins가 빌드할 이미지 이름
+          image: node-server-app:latest # Jenkins가 빌드할 이미지 이름
           imagePullPolicy: Never
           ports:
             - containerPort: 3000 # 컨테이너가 노출할 포트 (Node.js 서버 포트)
