@@ -1,6 +1,6 @@
 import oracledb from "oracledb";
 
-export async function connectDB() {
+export default async function connectDB() {
   try {
     // TNS_ADMIN 환경변수가 자동으로 wallet 내 tnsnames.ora 위치를 가리킵니다.
     const connection = await oracledb.getConnection({
