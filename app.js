@@ -50,7 +50,8 @@ app.use(function (err, req, res, next) {
 // Cron job to fetch stock data everyday at 00:00
 cron.schedule("0 0 * * *", async () => {
   try {
-    const getStockData = (await import("./services/getStockData.js")).default;
+    const getStockData = (await import("./src/services/getStockData.js"))
+      .default;
     await getStockData();
   } catch (error) {
     console.error("Error fetching stock data:", error);
