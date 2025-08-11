@@ -20,7 +20,7 @@ pipeline {
                     def imageTagLatest = "${env.APP_NAME}:latest"
                     def imageTagBuild  = "${env.APP_NAME}:${env.BUILD_NUMBER}"
 
-                    sh "docker build -t ${imageTagLatest} -t ${imageTagBuild} ."
+                    sh "docker build --no-cache -t ${imageTagLatest} -t ${imageTagBuild} ."
                     echo "Docker images built: ${imageTagLatest}, ${imageTagBuild}"
 
                     // k3s containerd에 이미지 바로 로드 (sudo 필수)

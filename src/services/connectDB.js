@@ -7,7 +7,6 @@ export default async function connectDB() {
       user: process.env.DB_USER, // .env 파일에서 DB 사용자 이름을 가져옵니다.
       password: process.env.DB_PASSWORD, // .env 파일에서 DB 비밀번호를 가져옵니다.
       connectString: "pkodaz6a1r6ul85c_high",
-      walletLocation: "/Users/zia/projects/key/Wallet_PKODAZ6A1R6UL85C",
     });
 
     console.log("DB 연결 성공!");
