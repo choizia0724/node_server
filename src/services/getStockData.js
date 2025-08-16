@@ -1,5 +1,5 @@
 import axios from "axios";
-import connectDB from "./connectDB.js";
+import models from "../../models/index.js";
 
 // Get last week's Monday and format as 'YYYYMMDD'
 function getLastWeekMonday() {
@@ -34,49 +34,30 @@ const getStockData = async () => {
     .then(async (response) => {
       if (response.status === 200) {
         const data = response.data.response.body.items.item;
-        const connection = await connectDB();
-
-        const mergeSql = `
-MERGE INTO stock_table target
-USING (SELECT :symbol AS symbol, :name AS name, TO_DATE(:basDt, 'YYYYMMDD') AS basDt,
-              :isinCd AS isinCd, :mrktCtg AS mrktCtg, :crno AS crno, :corpNm AS corpNm
-       FROM dual) source
-ON (target.symbol = source.symbol AND target.basDt = source.basDt)
-WHEN MATCHED THEN
-  UPDATE SET 
-    name = source.name,
-    isinCd = source.isinCd,
-    mrktCtg = source.mrktCtg,
-    crno = source.crno,
-    corpNm = source.corpNm
-WHEN NOT MATCHED THEN
-  INSERT (symbol, name, basDt, isinCd, mrktCtg, crno, corpNm)
-  VALUES (source.symbol, source.name, source.basDt, source.isinCd, source.mrktCtg, source.crno, source.corpNm)
-`;
 
         for (const item of data) {
           const stockData = {
             symbol: item.srtnCd,
             name: item.itmsNm,
-            basDt: item.basDt,
-            isinCd: item.isinCd,
-            mrktCtg: item.mrktCtg,
+            basdt: item.basDt,
+            isincd: item.isinCd,
+            mrktctg: item.mrktCtg,
             crno: item.crno,
-            corpNm: item.corpNm,
+            corpnm: item.corpNm,
           };
-
-          await connection.execute(mergeSql, {
-            symbol: stockData.symbol,
-            name: stockData.name,
-            basDt: stockData.basDt,
-            isinCd: stockData.isinCd,
-            mrktCtg: stockData.mrktCtg,
-            crno: stockData.crno,
-            corpNm: stockData.corpNm,
-          });
+          models.Stock.upsert(stockData)
+            .then(() => {
+              console.log(
+                `Stock data for ${stockData.symbol} updated successfully.`
+              );
+            })
+            .catch((error) => {
+              console.error(
+                `Error updating stock data for ${stockData.symbol}:`,
+                error
+              );
+            });
         }
-
-        await connection.commit();
 
         console.log("Stock data successfully saved to the database.");
       } else {

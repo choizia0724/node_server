@@ -33,23 +33,28 @@ spec:
                 secretKeyRef:
                   name: key-secret
                   key: data-api-key
-            - name: TNS_ADMIN
-              value: /app/wallet
-            - name: DB_USER
+            - name: PG_HOST
               valueFrom:
                 secretKeyRef:
-                  name: db-secret
-                  key: db_user
-            - name: DB_PASSWORD
+                  name: pg-secret
+                  key: pg_host
+            - name: PG_PORT
               valueFrom:
                 secretKeyRef:
-                  name: db-secret
-                  key: db_password
-          volumeMounts:
-            - name: wallet-volume
-              mountPath: /app/wallet
-      volumes:
-        - name: wallet-volume
-          hostPath:
-            path: /home/opc/wallet
-            type: Directory
+                  name: pg-secret
+                  key: pg_port
+            - name: PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pg-secret
+                  key: pg_user
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg-secret
+                  key: pg_password
+            - name: PG_DB
+              valueFrom:
+                secretKeyRef:
+                  name: pg-secret
+                  key: pg_db

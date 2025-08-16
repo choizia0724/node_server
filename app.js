@@ -5,11 +5,18 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import cron from "node-cron";
 
+import dotenv from "dotenv";
+dotenv.config();
+
+import models from "./models/index.js"; // Import models to sync with the database
+
 import indexRouter from "./routes/index.js"; // .js 확장자 필수
 import usersRouter from "./routes/users.js"; // .js 확장자 필수
 import stockRouter from "./routes/stock.js"; // .js 확장자 필수
 
 import { fileURLToPath } from "url";
+
+import getStockData from "./src/services/getStockData.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,11 +54,17 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
+models.sequelize
+  .sync()
+  .then(() => {
+    console.log("Stock table synced successfully.");
+  })
+  .catch((error) => {
+    console.error("Error syncing Stock table:", error);
+  });
 // Cron job to fetch stock data everyday at 00:00
 cron.schedule("0 0 * * *", async () => {
   try {
-    const getStockData = (await import("./src/services/getStockData.js"))
-      .default;
     await getStockData();
   } catch (error) {
     console.error("Error fetching stock data:", error);
