@@ -48,12 +48,6 @@ router.post("/search", async function (req, res, next) {
   if (mrktctg) {
     whereClause.mrktctg = mrktctg;
   }
-
-  // If no search parameters are provided, return 400
-  if (Object.keys(whereClause).length === 0) {
-    return res.status(400).send("No search parameters provided.");
-  }
-
   try {
     const { count, rows } = await models.Stock.findAndCountAll({
       where: whereClause,
