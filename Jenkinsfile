@@ -8,7 +8,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 echo 'Checking out code from GitHub...'
-                git branch: 'main', url: 'https://github.com/choizia0724/node_server.git'
+                git branch: 'backend', url: 'https://github.com/choizia0724/node_server.git'
                 echo 'Code successfully checked out.'
             }
         }
