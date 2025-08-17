@@ -41,23 +41,46 @@ const TableWidget = (props: TableWidgetProps) => {
   );
 };
 
-const getStockData = async (): Promise<StockDTO[]> => {
-  const res = await axios.get<StockDTO[]>("/api/stock");
+const getStockData = async (filters: {
+  symbol?: string;
+  name?: string;
+  basdt?: string;
+  isincd?: string;
+  mrktctg?: string;
+  crno?: string;
+  corpnm?: string;
+}): Promise<StockDTO[]> => {
+  const res = await axios.post<StockDTO[]>("/api/stock/search", filters, {
+    headers: {
+      "Cache-Control": "no-cache",
+    },
+  });
 
   return res.data;
 };
 
 export default function Home() {
   const [stockData, setStockData] = useState<StockDTO[]>([]);
+  const [filters, setFilters] = useState({
+    symbol: "",
+    name: "",
+    basdt: "",
+    isincd: "",
+    mrktctg: "",
+    crno: "",
+    corpnm: "",
+    page: 1,
+    size: 10,
+  });
 
   useEffect(() => {
-    getStockData()
+    getStockData(filters)
       .then((data) => {
         setStockData(data);
       })
       .catch((error) => {
         console.error("Error fetching stock data:", error);
       });
-  }, []);
+  }, [filters]);
   return stockData.length > 0 ? <TableWidget data={stockData} /> : null;
 }
