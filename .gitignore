@@ -11,4 +11,6 @@ coverage/
 .vscode/
 .idea/
 .vscode-test/
+.next/
+next*
 # Dependencies

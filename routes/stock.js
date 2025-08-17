@@ -6,37 +6,38 @@ var router = Router();
 
 /* GET stock listing. */
 router.get("/", async function (req, res, next) {
-  models.Stock.findAll()
-    .then((stocks) => {
-      res.status(200).json(stocks);
-    })
-    .catch((error) => {
-      console.error("Error fetching stock data:", error);
-      res.status(500).send("Error fetching stock data.");
-    });
-});
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const offset = (page - 1) * limit;
 
-/* GET stock by symbol */
-router.get("/:symbol", async function (req, res, next) {
-  const symbol = req.params.symbol;
-  models.Stock.findOne({ where: { symbol } })
-    .then((stock) => {
-      if (stock) {
-        res.status(200).json(stock);
-      } else {
-        res.status(404).send("Stock not found.");
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching stock data:", error);
-      res.status(500).send("Error fetching stock data.");
+  try {
+    const { count, rows } = await models.Stock.findAndCountAll({
+      offset,
+      limit,
+      order: [["symbol", "asc"]],
     });
+
+    res.status(200).json({
+      data: rows,
+      pagination: {
+        totalItems: count,
+        currentPage: page,
+        totalPages: Math.ceil(count / limit),
+        limit,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching paginated stock data:", error);
+    res.status(500).send("Error fetching stock data.");
+  }
 });
 
 /* Get stock by param */
 router.post("/search", async function (req, res, next) {
-  const { symbol, name, mrktctg } = req.body;
+  const { symbol, name, mrktctg, page = 1, limit = 20 } = req.body;
+
   const whereClause = {};
+  const offset = (page - 1) * limit;
 
   if (symbol) {
     whereClause.symbol = symbol;
@@ -48,19 +49,32 @@ router.post("/search", async function (req, res, next) {
     whereClause.mrktctg = mrktctg;
   }
 
-  // If no search parameters are provided, return all stocks
+  // If no search parameters are provided, return 400
   if (Object.keys(whereClause).length === 0) {
     return res.status(400).send("No search parameters provided.");
   }
 
-  models.Stock.findAll({ where: whereClause })
-    .then((stocks) => {
-      res.status(200).json(stocks);
-    })
-    .catch((error) => {
-      console.error("Error searching stock data:", error);
-      res.status(500).send("Error searching stock data.");
+  try {
+    const { count, rows } = await models.Stock.findAndCountAll({
+      where: whereClause,
+      offset,
+      limit,
+      order: [["basdt", "DESC"]],
     });
+
+    res.status(200).json({
+      data: rows,
+      pagination: {
+        totalItems: count,
+        currentPage: page,
+        totalPages: Math.ceil(count / limit),
+        limit,
+      },
+    });
+  } catch (error) {
+    console.error("Error searching stock data:", error);
+    res.status(500).send("Error searching stock data.");
+  }
 });
 
 /* Fetch and update stock data */
