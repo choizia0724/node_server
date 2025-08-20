@@ -4,14 +4,21 @@ import axios from "axios";
 import type { StockDTO } from "@/types/stock";
 import { Table, Thead, Th, Tbody, Tr, Td } from "./components/Table";
 import { useEffect, useState } from "react";
-// src/app/page.tsx
+import Pagination from "./components/pagination";
 
-interface TableWidgetProps {
+interface StockResponse {
   data: StockDTO[];
+  pagination?: {
+    currentPage: number;
+    totalPages: number;
+  };
 }
 
-const TableWidget = (props: TableWidgetProps) => {
-  console.log("TableWidget data:", props);
+interface TableWidgetProps {
+  data: StockResponse;
+}
+
+const TableWidget = ({ data }: TableWidgetProps) => {
   return (
     <Table>
       <Thead>
@@ -24,18 +31,17 @@ const TableWidget = (props: TableWidgetProps) => {
         <Th>법인명</Th>
       </Thead>
       <Tbody>
-        {props.data.length > 0 &&
-          props.data.map((item, idx) => (
-            <Tr key={idx}>
-              <Td>{item.symbol}</Td>
-              <Td>{item.name}</Td>
-              <Td>{item.basdt}</Td>
-              <Td>{item.isincd}</Td>
-              <Td>{item.mrktctg}</Td>
-              <Td>{item.crno}</Td>
-              <Td>{item.corpnm}</Td>
-            </Tr>
-          ))}
+        {data.data.map((item, idx) => (
+          <Tr key={idx}>
+            <Td>{item.symbol}</Td>
+            <Td>{item.name}</Td>
+            <Td>{item.basdt}</Td>
+            <Td>{item.isincd}</Td>
+            <Td>{item.mrktctg}</Td>
+            <Td>{item.crno}</Td>
+            <Td>{item.corpnm}</Td>
+          </Tr>
+        ))}
       </Tbody>
     </Table>
   );
@@ -49,10 +55,13 @@ const getStockData = async (filters: {
   mrktctg?: string;
   crno?: string;
   corpnm?: string;
-}): Promise<StockDTO[]> => {
-  const res = await axios.post<StockDTO[]>("/api/stock/search", filters, {
+  page?: number;
+  size?: number;
+}): Promise<StockResponse> => {
+  const res = await axios.post<StockResponse>("/api/stock/search", filters, {
     headers: {
       "Cache-Control": "no-cache",
+      "Content-Type": "application/json",
     },
   });
 
@@ -60,7 +69,14 @@ const getStockData = async (filters: {
 };
 
 export default function Home() {
-  const [stockData, setStockData] = useState<StockDTO[]>([]);
+  const [stockData, setStockData] = useState<StockResponse>({
+    data: [],
+    pagination: {
+      currentPage: 1,
+      totalPages: 1,
+    },
+  });
+
   const [filters, setFilters] = useState({
     symbol: "",
     name: "",
@@ -70,8 +86,12 @@ export default function Home() {
     crno: "",
     corpnm: "",
     page: 1,
-    size: 10,
+    limit: 10,
   });
+
+  const handlePageChange = (page: number) => {
+    setFilters((prev) => ({ ...prev, page }));
+  };
 
   useEffect(() => {
     getStockData(filters)
@@ -82,5 +102,15 @@ export default function Home() {
         console.error("Error fetching stock data:", error);
       });
   }, [filters]);
-  return stockData.length > 0 ? <TableWidget data={stockData} /> : null;
+
+  return (
+    <>
+      <TableWidget data={stockData} />
+      <Pagination
+        currentPage={stockData.pagination?.currentPage ?? 1}
+        totalPages={stockData.pagination?.totalPages ?? 1}
+        onPageChange={handlePageChange}
+      />
+    </>
+  );
 }
