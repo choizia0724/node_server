@@ -1,6 +1,6 @@
 import { Router } from "express";
-import getStockData from "../src/services/getStockData.js";
-import models from "../models/index.js";
+import getStockData from "../../services/getStockData.js";
+import models from "../../../models/index.js";
 
 var router = Router();
 

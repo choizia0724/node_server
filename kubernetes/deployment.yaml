@@ -58,3 +58,33 @@ spec:
                 secretKeyRef:
                   name: pg-secret
                   key: pg_db
+            - name: KIS_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: kis-secret
+                  key: KIS_BASE_URL
+            - name: KIS_WS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: kis-secret
+                  key: KIS_WS_URL
+            - name: KIS_APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kis-secret
+                  key: KIS_APP_KEY
+            - name: KIS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kis-secret
+                  key: KIS_SECRET_KEY
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  name: kis-secret
+                  key: PORT
+            - name: WS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: kis-secret
+                  key: WS_PORT
