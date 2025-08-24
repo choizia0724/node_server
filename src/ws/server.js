@@ -1,30 +1,55 @@
 // src/ws/server.js
-import http from "http";
 import { WebSocketServer } from "ws";
 import { mountPassThrough } from "./passThrough.js";
 import { createSamsungHub } from "./samsungHub.js";
 
-export const startWsServer = (
-  auth,
-  port = Number(process.env.WS_PORT || 8081)
-) => {
-  const server = http.createServer();
-  const wss = new WebSocketServer({ server });
+/**
+ * 기존 http.Server 인스턴스에 WebSocket 엔드포인트를 붙입니다.
+ * - 여기서는 listen을 호출하지 않습니다(바깥에서 한 번만 server.listen()).
+ * - 경로:
+ *   - /ws/pass
+ *   - /ws/samsung/:channel  (trade | quote | expected)
+ */
+export const startWsServer = (auth, server) => {
+  console.log(auth)
+  if (!server) throw new Error("startWsServer requires an http.Server instance");
 
-  // 패스스루
-  mountPassThrough(wss, auth);
+  const wssPass = new WebSocketServer({ noServer: true });
+  const wssSamsung = new WebSocketServer({ noServer: true });
 
-  // 삼성 집계형
+  // 1) 패스스루: 프론트와 업스트림을 그대로 중계
+  mountPassThrough(wssPass, auth);
+
+  // 2) 삼성 허브: 채널별 집계형 브로드캐스트
   const hub = createSamsungHub(auth);
-  wss.on("connection", async (client, req) => {
+  wssSamsung.on("connection", async (client, req) => {
     const path = req.url || "";
     const m = path.match(/^\/ws\/samsung\/(trade|quote|expected)$/);
-    if (!m) return;
-    const channel = m[1]; // 'trade' | 'quote' | 'expected'
-    await hub.addSubscriber(channel, client);
+    if (!m) return client.close();
+    await hub.addSubscriber(m[1], client); // m[1] = channel
   });
 
-  server.listen(port, () =>
-    console.log(`WS server on :${port} (/ws/pass, /ws/samsung/:channel)`)
-  );
+  // 업그레이드 라우팅
+  server.on("upgrade", (req, socket, head) => {
+    const url = req.url || "";
+
+    if (url.startsWith("/ws/pass")) {
+      wssPass.handleUpgrade(req, socket, head, (ws) => {
+        wssPass.emit("connection", ws, req);
+      });
+      return;
+    }
+
+    if (/^\/ws\/samsung\/(trade|quote|expected)$/.test(url)) {
+      wssSamsung.handleUpgrade(req, socket, head, (ws) => {
+        wssSamsung.emit("connection", ws, req);
+      });
+      return;
+    }
+
+    // 허용하지 않은 경로는 거절
+    socket.destroy();
+  });
+
+  return server;
 };

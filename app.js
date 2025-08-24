@@ -20,7 +20,6 @@ import { fileURLToPath } from "url";
 import getStockData from "./src/services/getStockData.js";
 
 import { createKisAuth } from "./src/auth/kisAuth.js";
-import { startWsServer } from "./src/ws/server.js";
 import { mountRest } from "./src/rest/router.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -57,9 +56,6 @@ const auth = createKisAuth();
 
 // REST (선택)
 mountRest(app, auth);
-
-// WS
-startWsServer(auth);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

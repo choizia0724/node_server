@@ -7,6 +7,8 @@
 import app from '../app.js'; // require 대신 import 사용, 로컬 파일은 확장자 .js 필수!
 import debugFn from 'debug'; // debug 모듈 import
 import http from 'http';
+import {createKisAuth} from "../src/auth/kisAuth.js";
+import {startWsServer} from "../src/ws/server.js";
 
 const debug = debugFn('node-server:server'); // debug 함수 초기화
 
@@ -21,8 +23,10 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-const server = http.createServer(app);
 
+const server = http.createServer(app);
+const auth = createKisAuth();
+startWsServer(auth,server)
 /**
  * Listen on provided port, on all network interfaces.
  */
