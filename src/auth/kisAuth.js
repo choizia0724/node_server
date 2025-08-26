@@ -25,7 +25,7 @@ export const createKisAuth = () => {
     const { data } = await axios.post(url, {
       grant_type: "client_credentials",
       appkey,
-      secretkey: secret,
+      appsecret: secret,
     });
     accessToken = data.access_token;
     accessExpAt = now() + (data.expires_in ?? 24 * 3600) * 1000;
