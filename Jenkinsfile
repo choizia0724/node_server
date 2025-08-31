@@ -39,7 +39,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying to Kubernetes...'
-                sh 'kubectl apply -f kubernetes/node-server-service.yaml'
+                sh 'kubectl apply -f kubernetes/deployment.yaml'
                 sh "kubectl get pods -l app=${env.APP_NAME}"
                 sh 'kubectl get services'
                 echo 'Deployment to Kubernetes complete.'
