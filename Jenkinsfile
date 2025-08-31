@@ -1,5 +1,5 @@
 pipeline {
-    agent any 
+    agent any
     environment {
         APP_NAME = 'node-server-app'
     }
@@ -25,10 +25,13 @@ pipeline {
 
                     // k3s containerd에 이미지 바로 로드 (sudo 필수)
                     sh """
-                    docker save ${imageTagLatest} -o ${env.APP_NAME}.tar
-                    sudo /usr/local/bin/k3s ctr images import ${env.APP_NAME}.tar
-                    rm -f ${env.APP_NAME}.tar
+                      docker save ${imageTagLatest} -o ${env.APP_NAME}.tar
+                      sudo /usr/local/bin/k3s ctr images import ${env.APP_NAME}.tar
+                      sudo /usr/local/bin/k3s ctr images tag docker.io/library/${env.APP_NAME}:latest ${env.APP_NAME}:latest
+                      /usr/local/bin/k3s ctr images ls | grep ${env.APP_NAME}
+                      rm -f ${env.APP_NAME}.tar
                     """
+
                 }
             }
         }
@@ -36,7 +39,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying to Kubernetes...'
-                sh 'kubectl apply -f kubernetes/deployment.yaml'
+                sh 'kubectl apply -f kubernetes/node-server-service.yaml'
                 sh "kubectl get pods -l app=${env.APP_NAME}"
                 sh 'kubectl get services'
                 echo 'Deployment to Kubernetes complete.'
