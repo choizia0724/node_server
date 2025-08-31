@@ -19,8 +19,9 @@ import { fileURLToPath } from "url";
 
 import getStockData from "./src/services/getStockData.js";
 
-import { createKisAuth } from "./src/auth/kisAuth.js";
+
 import { mountRest } from "./src/rest/router.js";
+import kisAuth from "./src/auth/kisAuth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,10 +53,9 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/stock", stockRouter);
 
-const auth = createKisAuth();
 
 // REST (선택)
-mountRest(app, auth);
+mountRest(app, kisAuth);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
