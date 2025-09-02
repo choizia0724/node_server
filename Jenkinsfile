@@ -48,19 +48,19 @@ pipeline {
       }
     }
 
-    stage('Deploy to Kubernetes') {
+
+    stage('Deploy') {
       steps {
         sh '''
           set -eux
-          # 빌드번호 태그로 롤아웃 → 새 이미지로 반드시 업데이트됨
+          # 반드시 repo의 최신 파일을 적용
+          kubectl apply -f kubernetes/deployment.yaml
+
+          # 이미지 태그는 빌드번호로 업데이트
           kubectl set image deployment/node-server-deployment \
-            node-server-container=${IMAGE}:${BUILD_NUMBER}
+            node-server-container=docker.io/choizia/node-server-app:${BUILD_NUMBER}
 
-          # 롤아웃 완료까지 대기
-          kubectl rollout status deployment/node-server-deployment --timeout=120s
-
-          # 확인용
-          kubectl get pods -l app=${APP_NAME} -o wide
+          kubectl rollout status deployment/node-server-deployment --timeout=180s
         '''
       }
     }
