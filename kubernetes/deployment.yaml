@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: node-server-container
-          image: docker.io/<DH_USER>/node-server-app:latest
+          image: docker.io/choizia/node-server-app:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
