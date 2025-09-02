@@ -78,11 +78,6 @@ spec:
                 secretKeyRef:
                   name: kis-secret
                   key: KIS_SECRET_KEY
-            - name: PORT
-              valueFrom:
-                secretKeyRef:
-                  name: kis-secret
-                  key: PORT
             - name: WS_PORT
               valueFrom:
                 secretKeyRef:
