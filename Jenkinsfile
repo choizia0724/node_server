@@ -3,7 +3,7 @@ pipeline {
   agent any
   environment {
     APP_NAME   = 'node-server-app'
-    DH_USER    = '<DH_USER>'     // 선택: 고정값이면 직접 넣어도 되고, Credentials에서 읽어도 됨
+    DH_USER    = 'choizia'
     IMAGE      = "docker.io/${DH_USER}/${APP_NAME}"
   }
 
