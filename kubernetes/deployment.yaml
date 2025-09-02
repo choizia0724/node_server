@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: node-server-container
-          image: node-server-app:latest
-          imagePullPolicy: Never
+          image: docker.io/<DH_USER>/node-server-app:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
           resources:
