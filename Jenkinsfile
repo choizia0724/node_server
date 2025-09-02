@@ -58,7 +58,7 @@ pipeline {
 
           # 이미지 태그는 빌드번호로 업데이트
           kubectl set image deployment/node-server-deployment \
-            node-server-container=docker.io/choizia/node-server-app:${BUILD_NUMBER}
+            node-server-container=docker.io/choizia/node-server-app:latest
 
           kubectl rollout status deployment/node-server-deployment --timeout=180s
         '''
