@@ -25,7 +25,7 @@ export const mountRest = (app, auth) => {
             authorization: `bearer ${token}`,
             appkey: process.env.KIS_APP_KEY,
             appsecret: process.env.KIS_SECRET_KEY,
-            tr_id:'FHKST03010200',  // 거래 id
+            tr_id:'FHKST03010100',  // 거래 id
             custtype:'P'            // 개인
           },
           params: req.query,
