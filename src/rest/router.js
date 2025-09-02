@@ -10,6 +10,7 @@ export const mountRest = (app, auth) => {
 
   // --- 유틸들 ---
   const normalizeCode6 = (raw) => (raw || "").replace(/\D/g, "").slice(-6); // "A006390" -> "006390"
+
   const mergeQuery = (req, defaults) => {
     // 기본값 -> 클라이언트 쿼리가 있으면 덮어쓰기
     req.query = { ...defaults, ...req.query };
@@ -24,8 +25,8 @@ export const mountRest = (app, auth) => {
             authorization: `bearer ${token}`,
             appkey: process.env.KIS_APP_KEY,
             appsecret: process.env.KIS_SECRET_KEY,
-            tr_id:'FHKST03010200',
-            custtype:'P'
+            tr_id:'FHKST03010200',  // 거래 id
+            custtype:'P'            // 개인
           },
           params: req.query,
           timeout: 10000,
@@ -56,118 +57,29 @@ export const mountRest = (app, auth) => {
 
   // --- 라우트들 ---
 
-  // 종목 리스트 (네가 실제 쓰는 "종목 목록" API로 바꿔도 됨)
-  r.get("/stocks", (req, res) => {
-    // 문서에 따라 필요 파라미터가 다를 수 있어 패스스루 유지
+  // 국내주식기간별시세(일/주/월/년)[v1_국내주식-016]
+  r.post("/stock/:code/search", (req, res) => {
+    const code6 = normalizeCode6(req.params.code)
+    mergeQuery(req, {
+      FID_COND_MRKT_DIV_CODE: "J",      // 주식 시장 분류 코드
+      FID_INPUT_ISCD:code6,             // 입력 종목코드
+      FID_INPUT_HOUR_1: req.body.hour,             // 입력시간 (ex 13시 130000)
+      FID_INPUT_DATE_1: req.body.date1,             // 조회 시작일자 (ex 20240101
+      FID_INPUT_DATE_2: req.body.date2,             // 조회 종료일자
+      FID_PERIOD_DIV_CODE: req.body.divCode,         // D:일봉 W:주봉, M:월봉, Y:년봉
+      FID_ORG_ADJ_PRC: req.body.adj,              // 0:수정주가 1:원주가
+    });
     return proxyGet(req, res, "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice");
   });
 
-  // 현재가
-  r.get("/stock/:code/quote", (req, res) => {
+  // 주식현재가 투자자[v1_국내주식-012] : [국내주식-012 v1] 주식현재가 투자자
+  r.get("/stock/:code/investor", (req, res) => {
     const code6 = normalizeCode6(req.params.code);
     mergeQuery(req, {
       fid_cond_mrkt_div_code: "J", // 주식
       fid_input_iscd: code6,
     });
     return proxyGet(req, res, "/uapi/domestic-stock/v1/quotations/inquire-price");
-  });
-
-  // 당일 분봉 (intraday)
-  r.get("/stock/:code/intraday", (req, res) => {
-    const code6 = normalizeCode6(req.params.code);
-    mergeQuery(req, {
-      FID_COND_MRKT_DIV_CODE: "J", // 주식
-      FID_INPUT_ISCD: code6,
-      FID_INPUT_HOUR_1: "090000",  // 장 시작부터
-      FID_PW_DATA_INCU_YN: "N",    // 수정주가 포함 여부(버전에 따라 옵션)
-      //fid_org_adj_prc: "0",        // 수정주가 반영코드(문서에 따라 사용)
-      FID_ETC_CLS_CODE:"J"
-    });
-    return proxyGet(
-        req,
-        res,
-        "/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice"
-    );
-  });
-
-  // 일봉
-  r.get("/stock/:code/daily", (req, res) => {
-    const code6 = normalizeCode6(req.params.code);
-    mergeQuery(req, {
-      fid_cond_mrkt_div_code: "J",
-      fid_input_iscd: code6,
-      fid_pw_data_incu_yn: "N",
-      fid_org_adj_prc: "0",
-      // 기간/범위 파라미터가 있는 문서 버전이면 필요 시 여기에 추가 (예: from/to)
-    });
-    return proxyGet(
-        req,
-        res,
-        "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
-    );
-  });
-
-  // 주봉
-  r.get("/stock/:code/weekly", (req, res) => {
-    const code6 = normalizeCode6(req.params.code);
-    mergeQuery(req, {
-      fid_cond_mrkt_div_code: "J",
-      fid_input_iscd: code6,
-      fid_pw_data_incu_yn: "N",
-      fid_org_adj_prc: "0",
-    });
-    return proxyGet(
-        req,
-        res,
-        "/uapi/domestic-stock/v1/quotations/inquire-weekly-itemchartprice"
-    );
-  });
-
-  // 월봉
-  r.get("/stock/:code/monthly", (req, res) => {
-    const code6 = normalizeCode6(req.params.code);
-    mergeQuery(req, {
-      fid_cond_mrkt_div_code: "J",
-      fid_input_iscd: code6,
-      fid_pw_data_incu_yn: "N",
-      fid_org_adj_prc: "0",
-    });
-    return proxyGet(
-        req,
-        res,
-        "/uapi/domestic-stock/v1/quotations/inquire-monthly-itemchartprice"
-    );
-  });
-
-  // 체결 내역(틱)
-  r.get("/stock/:code/trades", (req, res) => {
-    const code6 = normalizeCode6(req.params.code);
-    mergeQuery(req, {
-      fid_cond_mrkt_div_code: "J",
-      fid_input_iscd: code6,
-      // 필요 시 건수/시작시각 등의 파라미터를 문서에 맞춰 추가
-      // ex) fid_input_hour_1: "090000"
-    });
-    return proxyGet(
-        req,
-        res,
-        "/uapi/domestic-stock/v1/quotations/inquire-transaction"
-    );
-  });
-
-  // 종목별 투자자 동향
-  r.get("/stock/:code/investor", (req, res) => {
-    const code6 = normalizeCode6(req.params.code);
-    mergeQuery(req, {
-      fid_cond_mrkt_div_code: "J",
-      fid_input_iscd: code6,
-      // 기간/집계 단위 등은 문서에 따라 추가
-    });
-    return proxyGet(
-        req,
-        res,
-        "/uapi/domestic-stock/v1/quotations/inquire-investor"
-    );
   });
 
   // 종목별 프로그램매매 동향
