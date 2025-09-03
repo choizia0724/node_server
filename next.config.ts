@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/:path*",
+        source: "/apis/:path*",
         destination: "http://129.154.194.75:32000/:path*", // 백엔드 주소
       },
     ];
