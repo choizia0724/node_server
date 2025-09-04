@@ -83,7 +83,9 @@ export const mountRest = (app, auth) => {
     mergeQuery(req, {
       FID_COND_MRKT_DIV_CODE: "J",
       FID_INPUT_ISCD: req.params.code,
-      FID_INPUT_HOUR_1: req.body.hour || hhmmssNow(),
+      FID_INPUT_HOUR_1: req.body.hour,
+      FID_PW_DATA_INCU_YN: "Y",
+      FID_ETC_CLS_CODE:"J"
     });
     return proxyGet(
         req,
