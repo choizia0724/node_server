@@ -1,5 +1,5 @@
-// types/StockSearchRequest.ts
-export interface StockSearchRequest {
+// types/dailySearchRequest.ts
+export interface dailySearchRequest {
     hour: string;     // 조회 시간 (예: "130000")
     date1: string;    // 조회 시작일 (예: "20240101")
     date2: string;    // 조회 종료일 (예: "20240131")

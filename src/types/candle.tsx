@@ -1,7 +1,7 @@
 import { type UTCTimestamp} from "lightweight-charts"
 
 export interface CandleDTO{
-    time: object;
+    time: UTCTimestamp;
     open: number;
     high: number;
     low: number;

@@ -2,64 +2,62 @@
 import StockChart from "@/app/components/StockChart";
 import axios from "axios";
 import {CandleDTO} from "@/types/candle";
-import {StockSearchRequest} from "@/types/StockSearchRequest";
+import {dailySearchRequest} from "@/types/dailySearchRequest";
+import {getDailyData, getHourlyData} from '@/app/utils/getChartData';
 
-function toUtcTs(time: string | number) {
-    return Math.floor(new Date(time).getTime() / 1000) as any;
-}
+
+const hhmmss = () => {
+    const d = new Date();
+    return [d.getHours(), d.getMinutes(), d.getSeconds()]
+        .map(n => String(n).padStart(2, "0"))
+        .join("");
+};
+
 
 export default async function Page({params}: { params:Promise<{ code: string }> }) {
     const {code} = await params
 
+    const dailyCandles:CandleDTO[]=[];
+    const timeCandles:CandleDTO[]=[];
+
     // 보낼 body
-    const body: StockSearchRequest = {
+    const dailyBody: dailySearchRequest = {
         hour: "130000",      // 오후 1시
         date1: "20240901",   // 시작일
         date2: "20250931",   // 종료일
         divCode: "D",        // 일봉
         adj: "1",            // 수정주가
     };
-    const candles:CandleDTO[]=[];
+    // 국내주식기간별시세(일/주/월/년)[v1_국내주식-016]
+    await getDailyData(
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/stock/${code}/search/`,
+        dailyBody,
+        dailyCandles
+        );
 
-    // 초기 데이터 가져오기
-    //const {data} =
-        await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE}/api/stock/${code}/search`,
-        body,
-        {
-            headers: {
-                "Cache-Control": "no-store",
-                "content-type": "application/json"
-            }
-        }
-    ).then((res:any)=>{
+    // 주식당일분봉조회[v1_국내주식-022]
+    // await getApiData(
+    //     `${process.env.NEXT_PUBLIC_API_BASE}/api/stock/${code}/search/time`,
+    //     {hour: hhmmss()},
+    //     timeCandles
+    // )
 
-        const sorted = res.data.output2.sort((a, b) => {
-            return a.stck_bsop_date - b.stck_bsop_date;
-        });
-            sorted.map((d: any) => (
-                    candles.push({
-                        time: {
-                            year: Number(d.stck_bsop_date.slice(0,4)),
-                            month: Number(d.stck_bsop_date.slice(4,6)),
-                            day: Number(d.stck_bsop_date.slice(6,8)),
-                        },
-                    open: Number(d.stck_oprc),
-                    high: Number(d.stck_hgpr),
-                    low: Number(d.stck_lwpr),
-                    close: Number(d.stck_clpr),
-                    volume: Number(d.acml_vol),
-                })
-            ));
+    await getHourlyData(`${process.env.NEXT_PUBLIC_API_BASE}/api/stock/${code}/search/time`,
+        {hour:hhmmss()},
+        timeCandles
+        )
 
-        });
+    // 주식현재가 투자자[v1_국내주식-012]
+    await axios.get(`${process.env.NEXT_PUBLIC_API_BASE}/api/stock/${code}/investor`)
+        .then(res=> console.log(res.data))
 
 
 
     return (
         <div className="p-4">
             <h1 className="text-xl font-bold mb-2">{code} 차트</h1>
-            <StockChart candles={candles} />
+            <StockChart candles={dailyCandles} />
+            <StockChart candles={timeCandles}/>
         </div>
     );
 }
