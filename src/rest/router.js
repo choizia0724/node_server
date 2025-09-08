@@ -60,7 +60,7 @@ export const mountRest = (app, auth) => {
   // --- 라우트들 ---
 
   // 국내주식기간별시세(일/주/월/년)[v1_국내주식-016]
-  r.post("/stock/:code/search", (req, res) => {
+  r.post("/stock/search/:code", (req, res) => {
     mergeQuery(req, {
       FID_COND_MRKT_DIV_CODE: "J",
       FID_INPUT_ISCD: req.params.code,
@@ -79,7 +79,7 @@ export const mountRest = (app, auth) => {
   });
 
   // 주식당일분봉조회[v1_국내주식-022]
-  r.post("/stock/:code/search/time", (req, res) => {
+  r.post("/stock/search/time/:code", (req, res) => {
     mergeQuery(req, {
       FID_COND_MRKT_DIV_CODE: "J",
       FID_INPUT_ISCD: req.params.code,
@@ -96,7 +96,7 @@ export const mountRest = (app, auth) => {
   });
 
   // 주식현재가 투자자[v1_국내주식-012]
-  r.get("/stock/:code/investor", (req, res) => {
+  r.get("/stock/investor/:code", (req, res) => {
     mergeQuery(req, {
       fid_cond_mrkt_div_code: "J", // 주식
       fid_input_iscd: req.params.code,
@@ -113,5 +113,5 @@ export const mountRest = (app, auth) => {
   // 헬스체크(테스트)
   r.get("/__ping", (_req, res) => res.send("rest-ok"));
 
-  app.use("/api", r);
+  app.use("/proxy", r);
 };
