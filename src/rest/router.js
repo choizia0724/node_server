@@ -73,7 +73,7 @@ export const mountRest = (app, auth) => {
     return proxyGet(
         req,
         res,
-        "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+        "/uapi/domestic-stock/v1/quotations/inquire-time-dailychartprice",
         TRID_DAILY
     );
   });
