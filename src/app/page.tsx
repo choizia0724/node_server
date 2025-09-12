@@ -5,6 +5,7 @@ import type { StockDTO } from "@/types/stock";
 import { Table, Thead, Th, Tbody, Tr, Td } from "./components/Table";
 import { useEffect, useState } from "react";
 import Pagination from "./components/pagination";
+import Link from "next/link";
 
 interface StockResponse {
   data: StockDTO[];
@@ -31,17 +32,20 @@ const TableWidget = ({ data }: TableWidgetProps) => {
         <Th>법인명</Th>
       </Thead>
       <Tbody>
-        {data.data.map((item, idx) => (
+        {data.data.map((item, idx) => {
+          const code = item.symbol.slice(-6);
+          return(
           <Tr key={idx}>
             <Td>{item.symbol}</Td>
-            <Td>{item.name}</Td>
+            <Td><Link href={`/stocks/${code}`}>{item.name}</Link></Td>
             <Td>{item.basdt}</Td>
             <Td>{item.isincd}</Td>
             <Td>{item.mrktctg}</Td>
             <Td>{item.crno}</Td>
             <Td>{item.corpnm}</Td>
           </Tr>
-        ))}
+        )}
+        )}
       </Tbody>
     </Table>
   );

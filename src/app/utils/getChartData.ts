@@ -15,6 +15,7 @@ const toUtcSec = (ymd: string, hms: string): UTCTimestamp => {
 
 
 const getDailyData = async (url:string, body:any, array:CandleDTO[]) => {
+    console.log(url)
     await axios.post(
         url,
         body,
