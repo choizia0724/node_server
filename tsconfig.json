@@ -20,6 +20,9 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
+    },
+    "rules": {
+      "@typescript-eslint/no-explicit-any": "warn"
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
