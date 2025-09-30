@@ -2,9 +2,9 @@
 pipeline {
   agent any
   environment {
-    APP_NAME   = 'node-server-app'
-    DH_USER    = 'choizia'
-    IMAGE      = "docker.io/${DH_USER}/${APP_NAME}"
+      REGISTRY      = 'docker.io/choizia'
+      IMAGE_NAME    = 'node-server-app'
+      IMAGE         = "${REGISTRY}/${IMAGE_NAME}"
   }
 
   stages {
@@ -49,7 +49,7 @@ pipeline {
     }
 
 
-    stage('Deploy') {
+    stage('Deploy to Kubernetes') {
       steps {
         sh '''
           set -eux
