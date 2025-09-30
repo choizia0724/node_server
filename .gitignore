@@ -1,16 +1,70 @@
-node_modules/
-.DS_Store
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-package-lock.json
-pnpm-lock.yaml
-dist/
-coverage/
-.env
-.vscode/
+### Java / Kotlin ###
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+
+### Gradle ###
+.gradle/
+build/
+out/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# gradle.properties 같은 민감한 설정이 로컬에만 있어야 한다면:
+gradle.properties
+
+### IntelliJ IDEA ###
 .idea/
-.vscode-test/
-.next/
-next*
-# Dependencies
+*.iws
+*.ipr
+
+# IntelliJ generated files
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+.idea/**/contentModel.xml
+.idea/**/modules.xml
+.idea/**/modules
+.idea/**/compiler.xml
+.idea/**/gradle.xml
+.idea/**/libraries
+
+# IntelliJ plugin-specific
+.idea/caches/
+.idea/libraries/
+.idea/compiler.xml
+.idea/assetWizardSettings.xml
+
+### MacOS ###
+.DS_Store
+
+### Windows ###
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+### Logs ###
+*.log
+logs/
+*.out
+
+### Spring Boot ###
+# exclude local runtime files
+*.pid
+*.seed
+*.key
+*.db
+
+### Kotlin ###
+# Kotlin compilation
+*.kotlin_module
+
+### Environment ###
+.env
+.env.*
