@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://129.154.194.75:32000/:path*", // 백엔드 주소
+        destination: "http://129.154.194.75:30020/:path*", // 백엔드 주소
       },
     ];
   },
