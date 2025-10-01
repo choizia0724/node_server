@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ziapond.portfolio.project.repository.StockMapper">
+
+    <!-- 단건 업서트 -->
+    <insert id="upsertStock" parameterType="com.ziapond.portfolio.project.domain.StockTable">
+        INSERT INTO stock_table (
+            symbol, name, basdt, isincd, mrktctg, crno, corpnm
+        ) VALUES (
+            #{r.symbol}, #{r.name}, #{r.basdt}, #{r.isincd}, #{r.mrktctg}, #{r.crno}, #{r.corpnm}
+        )
+        ON CONFLICT (symbol, basdt) DO UPDATE SET
+            name    = EXCLUDED.name,
+            isincd  = EXCLUDED.isincd,
+            mrktctg = EXCLUDED.mrktctg,
+            crno    = EXCLUDED.crno,
+            corpnm  = EXCLUDED.corpnm
+    </insert>
+
+    <!-- 다건 업서트-->
+    <insert id="upsertStocks" parameterType="java.util.List">
+        INSERT INTO stock_table (
+            symbol, name, basdt, isincd, mrktctg, crno, corpnm
+        ) VALUES
+        <foreach collection="list" item="r" separator=",">
+            (#{r.symbol}, #{r.name}, #{r.basdt}, #{r.isincd}, #{r.mrktctg}, #{r.crno}, #{r.corpnm})
+        </foreach>
+        ON CONFLICT (symbol, basdt) DO UPDATE SET
+            name    = EXCLUDED.name,
+            isincd  = EXCLUDED.isincd,
+            mrktctg = EXCLUDED.mrktctg,
+            crno    = EXCLUDED.crno,
+            corpnm  = EXCLUDED.corpnm
+    </insert>
+
+</mapper>
