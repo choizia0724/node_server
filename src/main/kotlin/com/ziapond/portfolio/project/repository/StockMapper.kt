@@ -3,6 +3,7 @@ package com.ziapond.portfolio.project.repository
 import com.ziapond.portfolio.project.domain.StockTable
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Param
+import java.time.LocalDate
 
 /**
  * @fileoverview
@@ -15,4 +16,23 @@ import org.apache.ibatis.annotations.Param
 interface StockMapper {
     fun upsertStock(@Param("r") row:StockTable) : Int
     fun upsertStocks(@Param("list") rows: List<StockTable>) : Int
+    fun findBySymbolAndRange(symbol: String, from: LocalDate, to: LocalDate): List<StockTable>
+
+    fun searchStocks(
+        @Param("symbol") symbol: String?,
+        @Param("name") name: String?,
+        @Param("mrktctg") mrktctg: String?,
+        @Param("from") from: LocalDate?,
+        @Param("to") to: LocalDate?,
+        @Param("limit") limit: Int,
+        @Param("offset") offset: Int
+    ): List<StockTable>
+
+    fun countStocks(
+        @Param("symbol") symbol: String?,
+        @Param("name") name: String?,
+        @Param("mrktctg") mrktctg: String?,
+        @Param("from") from: LocalDate?,
+        @Param("to") to: LocalDate?
+    ): Long
 }

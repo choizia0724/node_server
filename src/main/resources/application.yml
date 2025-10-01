@@ -21,3 +21,11 @@ logging:
   level:
     org.springframework.beans.factory.support: INFO
     org.springframework.context.annotation: INFO
+
+schedules:
+  krx:
+    listed:
+      enabled: true
+      cron: "*/10 * * * * MON-FRI"
+      num-of-rows: 3000
+      date-mode: lastWeekMonday
