@@ -83,3 +83,17 @@ spec:
                 secretKeyRef:
                   name: kis-secret
                   key: WS_PORT
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-server-deployment
+  labels: { app: stock-server-app }
+spec:
+  type: NodePort
+  selector: { app: stock-server-app }
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      nodePort: 30020
