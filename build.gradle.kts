@@ -38,6 +38,7 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation("me.paulschwarz:spring-dotenv:4.0.0")
 }
 
 kotlin {

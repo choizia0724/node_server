@@ -1,18 +1,37 @@
-# Dockerfile
-FROM node:22-bullseye
+# ---------- Build stage ----------
+FROM eclipse-temurin:21-jdk-alpine AS builder
+WORKDIR /workspace
 
-# 컨테이너 내에서 애플리케이션의 작업 디렉토리를 /app으로 설정합니다.
+COPY gradlew gradlew
+COPY gradle gradle
+COPY settings.gradle.kts build.gradle.kts ./
+
+RUN chmod +x gradlew
+
+# 의존성만 먼저 내려받아 캐시화 (소스는 아직 복사 X)
+RUN ./gradlew --no-daemon dependencies > /dev/null || true
+
+# 이제 소스 복사
+COPY src src
+
+# 테스트 스킵하고 fat jar 생성 (필요시 테스트 실행으로 변경)
+RUN ./gradlew --no-daemon clean bootJar -x test
+
+# ---------- Runtime stage ----------
+FROM eclipse-temurin:21-jre-alpine AS runtime
 WORKDIR /app
 
-# package.json과 package-lock.json 파일을 먼저 복사합니다.
-COPY package*.json ./
+# (옵션) 보안상 비루트 사용자
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
 
-# Node.js 의존성(모듈)을 설치합니다.
-RUN npm install --production
+# 빌드 결과 복사
+COPY --from=builder /workspace/build/libs/*.jar app.jar
 
-COPY . .
+# (옵션) 프로파일/메모리 등 런타임 설정
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+ENV SPRING_PROFILES_ACTIVE=prod
 
-# 애플리케이션이 리스닝하는 포트를 외부에 노출합니다.
-EXPOSE 3000
+EXPOSE 8080
 
-CMD ["npm", "run", "start"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]

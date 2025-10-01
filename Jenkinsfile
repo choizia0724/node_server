@@ -3,14 +3,14 @@ pipeline {
   agent any
   environment {
       REGISTRY      = 'docker.io/choizia'
-      IMAGE_NAME    = 'node-server-app'
+      IMAGE_NAME    = 'stock-server-app'
       IMAGE         = "${REGISTRY}/${IMAGE_NAME}"
   }
 
   stages {
     stage('Checkout Code') {
       steps {
-        git branch: 'backend', url: 'https://github.com/choizia0724/node_server.git'
+        git branch: 'backend', url: 'https://github.com/choizia0724/stock_server.git'
       }
     }
 
@@ -57,10 +57,10 @@ pipeline {
           kubectl apply -f kubernetes/deployment.yaml
 
           # 이미지 태그는 빌드번호로 업데이트
-          kubectl set image deployment/node-server-deployment \
-            node-server-container=docker.io/choizia/node-server-app:latest
+          kubectl set image deployment/stock-server-deployment \
+            stock-server-container=docker.io/choizia/stock-server-app:latest
 
-          kubectl rollout status deployment/node-server-deployment --timeout=180s
+          kubectl rollout status deployment/stock-server-deployment --timeout=180s
         '''
       }
     }

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-server-deployment
+  name: stock-server-deployment
   labels:
-    app: node-server-app
+    app: stock-server-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: node-server-app
+      app: stock-server-app
   template:
     metadata:
       labels:
-        app: node-server-app
+        app: stock-server-app
     spec:
       containers:
-        - name: node-server-container
-          image: docker.io/choizia/node-server-app:latest
+        - name: stock-server-container
+          image: docker.io/choizia/stock-server-app:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
