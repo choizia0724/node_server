@@ -1,6 +1,6 @@
 package com.ziapond.portfolio.project.schedule
 
-import com.ziapond.portfolio.project.calendar.TradingCalendar
+import com.ziapond.portfolio.calendar.TradingCalendar
 import com.ziapond.portfolio.common.domain.StockData
 import com.ziapond.portfolio.common.mappers.StockDataMapper
 import com.ziapond.portfolio.batch.service.StockDataAgg

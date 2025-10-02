@@ -2,7 +2,7 @@
 FROM gradle:8.10.2-jdk21 AS build
 WORKDIR /home/gradle/project
 COPY --chown=gradle:gradle . .
-RUN gradle --no-daemon clean bootJar
+RUN gradle --no-daemon :web:clean :web:bootJar -x test
 
 # ---- Run ----
 FROM eclipse-temurin:21-jre
