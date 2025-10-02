@@ -6,7 +6,7 @@ WORKDIR /home/gradle/project
 COPY --chown=gradle:gradle gradlew gradlew
 COPY --chown=gradle:gradle gradle/wrapper/gradle-wrapper.jar gradle/wrapper/gradle-wrapper.jar
 COPY --chown=gradle:gradle gradle/wrapper/gradle-wrapper.properties gradle/wrapper/gradle-wrapper.properties
-COPY --chown=gradle:gradle settings.gradle.kts build.gradle.kts gradle.properties ./
+COPY --chown=gradle:gradle settings.gradle.kts build.gradle.kts ./
 RUN chmod +x ./gradlew || true
 
 # 의존성 캐시 워밍업 (소스 없이도 가능)
