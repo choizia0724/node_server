@@ -1,4 +1,4 @@
-package com.ziapond.portfolio.project.dto
+package com.ziapond.portfolio.project.web.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import jakarta.validation.constraints.Max

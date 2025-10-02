@@ -1,4 +1,12 @@
-package com.ziapond.portfolio.project.dto
+package com.ziapond.portfolio.project.web.dto
+
+/**
+ * @fileoverview
+ * @filename Aggregate30mResponse.kt
+ * @author zia
+ * @version 1.0.0 - 2025. 10. 3.
+ * @copyright 2025,
+ */
 
 data class Aggregate30mResponse(
     val skipped: Boolean,

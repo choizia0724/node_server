@@ -14,10 +14,10 @@ import kotlin.concurrent.withLock
 class KisTokenProviderImpl(
     builder: RestClient.Builder,
     @Value("\${kis.base-url}") private val baseUrl: String,
-    @Value("\${kis.token-path:/oauth2/tokenP}") private val tokenPath: String,
+    @Value("\${kis.token-path}") private val tokenPath: String,
     @Value("\${kis.app-key}") private val appKey: String,
     @Value("\${kis.app-secret}") private val appSecret: String,
-    @Value("\${kis.refresh-skew-seconds:60}") private val refreshSkewSeconds: Long
+    @Value("\${kis.refresh-skew-seconds}") private val refreshSkewSeconds: Long
 ) : KisTokenProvider {
 
     private val rest: RestClient = builder.baseUrl(baseUrl).build()

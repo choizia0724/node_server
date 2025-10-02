@@ -1,4 +1,4 @@
-package com.ziapond.portfolio.project.dto
+package com.ziapond.portfolio.project.web.dto
 
 /**
  * @fileOverview 페이지네이션에 대한 DTO

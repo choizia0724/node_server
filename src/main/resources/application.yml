@@ -29,3 +29,14 @@ schedules:
       cron: "*/10 * * * * MON-FRI"
       num-of-rows: 3000
       date-mode: lastWeekMonday
+
+kis:
+  base-url: https://openapi.koreainvestment.com:9443   # 모의면 https://openapivts.koreainvestment.com:29443
+  token-path: /oauth2/tokenP
+  app-key: ${APP_KEY}       # 환경변수로도 받을 수 있게
+  app-secret: ${APP_SECRET}
+  refresh-skew-seconds: 60
+  retry:
+    max-attempts: 5
+    base-delay-ms: 250
+    max-delay-ms: 3000

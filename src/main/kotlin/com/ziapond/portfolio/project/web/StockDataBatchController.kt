@@ -6,6 +6,8 @@ import com.ziapond.portfolio.project.mappers.StockDataMapper
 import com.ziapond.portfolio.project.service.MinuteCandleClient
 import com.ziapond.portfolio.project.service.StockDataAgg
 import com.ziapond.portfolio.project.service.StockItemInfo
+import com.ziapond.portfolio.project.web.dto.Aggregate30mRequest
+import com.ziapond.portfolio.project.web.dto.Aggregate30mResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -18,18 +20,6 @@ import java.time.ZonedDateTime
 import kotlin.math.max
 
 
-data class Aggregate30mRequest(
-    val symbols: List<String>? = null,   // 지정 없으면 KOSPI 전 종목
-    val endTime: String? = null          // "HH:mm" (없으면 현재 시각 기준 눈금 스냅)
-)
-
-data class Aggregate30mResponse(
-    val skipped: Boolean,
-    val reason: String? = null,
-    val windowStart: String? = null,
-    val windowEnd: String? = null,
-    val aggregated: Int = 0
-)
 
 @RestController
 @RequestMapping("/api/stock-data")
@@ -47,7 +37,7 @@ class StockDataBatchController(
         val today = now.toLocalDate()
         if (!calendar.isTradingDay(today)) {
             return ResponseEntity.ok(
-                Aggregate30mResponse(skipped = true, reason = "Holiday or weekend")
+                    Aggregate30mResponse(skipped = true, reason = "Holiday or weekend")
             )
         }
 

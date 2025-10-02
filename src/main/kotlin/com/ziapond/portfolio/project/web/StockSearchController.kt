@@ -2,10 +2,10 @@ package com.ziapond.portfolio.project.web
 
 
 import com.ziapond.portfolio.project.domain.StockTable
-import com.ziapond.portfolio.project.dto.PageResponse
-import com.ziapond.portfolio.project.dto.Pagination
+import com.ziapond.portfolio.project.web.dto.PageResponse
+import com.ziapond.portfolio.project.web.dto.Pagination
 import com.ziapond.portfolio.project.mappers.StockListMapper
-import com.ziapond.portfolio.project.dto.StockSearchRequest
+import com.ziapond.portfolio.project.web.dto.StockSearchRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

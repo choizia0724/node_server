@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
  */
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/sync")
 class StockController(
     private val service: StockItemInfo,
     private val stockMapper: StockListMapper
@@ -32,7 +32,7 @@ class StockController(
      * beginBasDt 미지정 시: 지난주 월요일 기준
      */
 
-    @PostMapping("/krx/listed/sync")
+    @PostMapping("/krx/listed")
     fun syncListed(
         @RequestParam(required = false) beginBasDt: String?,
         @RequestParam(defaultValue = "3000") numOfRows: Int
