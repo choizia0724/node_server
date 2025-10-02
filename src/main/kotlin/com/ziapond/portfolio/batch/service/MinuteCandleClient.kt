@@ -3,13 +3,16 @@ package com.ziapond.portfolio.batch.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ziapond.portfolio.kis.http.KisHttp
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.*
 
 @Service
 class MinuteCandleClient(
-    private val http: KisHttp
+    private val http: KisHttp,
+    @Value("\${kis.minute-value.tr_id}") private val trId: String,
+    @Value("\${kis.minute-value.path}") private val path: String,
 ) {
     data class MinuteTick(
         val tsKst: OffsetDateTime,
@@ -28,13 +31,13 @@ class MinuteCandleClient(
         val endStr = "%02d%02d%02d".format(windowEnd.hour, windowEnd.minute, 0)
 
         val node: JsonNode? = http.getJson(
-            path = "/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice",
+            path = path,
             query = mapOf(
                 "FID_COND_MRKT_DIV_CODE" to "J",
                 "FID_INPUT_ISCD" to symbol6,
                 "FID_INPUT_HOUR_1" to endStr
             ),
-            trId = "FHKST03010200",             // 당일 분봉
+            trId = trId,
             headers = mapOf("tr_cont" to "")    // 최초 호출
         )
 

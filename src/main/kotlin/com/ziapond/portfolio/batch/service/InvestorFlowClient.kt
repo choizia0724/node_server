@@ -20,8 +20,8 @@ import java.time.format.DateTimeFormatter
 @Service
 class InvestorFlowClient(
     private val http: KisHttp,
-    @Value("\${kis.tr-ids.investor.market-time}") // TODO: 실제 TR ID로 교체
-    private val trId: String
+    @Value("\${kis.investor.tr_id}") private val trId: String,
+    @Value("\${kis.investor.path}") private val path: String,
 ) {
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")
     private val ymdBasic = DateTimeFormatter.BASIC_ISO_DATE // yyyyMMdd
@@ -35,14 +35,12 @@ class InvestorFlowClient(
         windowStart: LocalTime,
         windowEnd: LocalTime
     ): List<InvestorFlow> {
-        // 일반적으로 '끝시각 기준' 조회가 30개 묶음으로 내려오므로 end 기준으로 호출
         val endStr = "%02d%02d%02d".format(windowEnd.hour, windowEnd.minute, 0)
 
         val node: JsonNode? = http.getJson(
-            path = "/uapi/domestic-stock/v1/quotations/inquire-investor-time-by-market",
+            path = path,
             query = mapOf(
-                // NOTE: 실제 파라미터명/값은 KIS 문서에 맞게 조정
-                "FID_COND_MRKT_DIV_CODE" to marketCode, // 예: "KOSPI" / "KOSDAQ"
+                "FID_COND_MRKT_DIV_CODE" to marketCode,
                 "FID_INPUT_HOUR_1"       to endStr
             ),
             trId = trId,

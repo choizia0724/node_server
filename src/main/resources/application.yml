@@ -31,18 +31,21 @@ schedules:
       date-mode: lastWeekMonday
 
 kis:
-  base-url: https://openapi.koreainvestment.com:9443   # 모의면 https://openapivts.koreainvestment.com:29443
+  base-url: https://openapi.koreainvestment.com:9443
   token-path: /oauth2/tokenP
-  app-key: ${APP_KEY}       # 환경변수로도 받을 수 있게
+  app-key: ${APP_KEY}
   app-secret: ${APP_SECRET}
   refresh-skew-seconds: 60
   retry:
     max-attempts: 5
     base-delay-ms: 250
     max-delay-ms: 3000
-  tr-ids:
-    investor:
-      market-time: FHPTJ04030000
+  investor:
+    path: /uapi/domestic-stock/v1/quotations/inquire-investor-time-by-market
+    tr_id: FHPTJ04030000
+  minute-value:
+    path: /uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice
+    tr_id: FHKST03010200
 
 batch:
   investor:
