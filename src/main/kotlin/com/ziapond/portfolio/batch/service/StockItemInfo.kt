@@ -1,8 +1,8 @@
 package com.ziapond.portfolio.batch.service
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.ziapond.portfolio.project.domain.StockTable
-import com.ziapond.portfolio.project.mappers.StockListMapper
+import com.ziapond.portfolio.common.domain.StockTable
+import com.ziapond.portfolio.common.mappers.StockListMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient

@@ -1,4 +1,4 @@
-package com.ziapond.portfolio.project.web.dto
+package com.ziapond.portfolio.batch.web.dto
 
 /**
  * @fileoverview

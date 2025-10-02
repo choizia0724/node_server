@@ -40,3 +40,10 @@ kis:
     max-attempts: 5
     base-delay-ms: 250
     max-delay-ms: 3000
+  tr-ids:
+    investor:
+      market-time: FHPTJ04030000
+
+batch:
+  investor:
+    markets: KOSPI

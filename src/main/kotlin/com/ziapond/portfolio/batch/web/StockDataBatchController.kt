@@ -6,8 +6,9 @@ import com.ziapond.portfolio.common.mappers.StockDataMapper
 import com.ziapond.portfolio.batch.service.MinuteCandleClient
 import com.ziapond.portfolio.batch.service.StockDataAgg
 import com.ziapond.portfolio.batch.service.StockItemInfo
-import com.ziapond.portfolio.project.web.dto.Aggregate30mRequest
-import com.ziapond.portfolio.project.web.dto.Aggregate30mResponse
+import com.ziapond.portfolio.batch.web.dto.Aggregate30mRequest
+import com.ziapond.portfolio.batch.web.dto.Aggregate30mResponse
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -27,7 +28,8 @@ class StockDataBatchController(
     private val calendar: TradingCalendar,
     private val stockItemInfo: StockItemInfo,
     private val minuteClient: MinuteCandleClient,
-    private val stockDataMapper: StockDataMapper
+    private val stockDataMapper: StockDataMapper,
+    @Value("\${batch.investor.markets}") private val marketsCsv: String,
 ) {
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")
 
@@ -50,7 +52,7 @@ class StockDataBatchController(
         val symbols: List<String> = req.symbols?.takeIf { it.isNotEmpty() } ?: run {
             val beginBasDt = today.minusDays(max(1, 7L))
             stockItemInfo.getStockItemName(beginBasDt)
-                .filter { it.mrktctg == "KOSPI" }
+                .filter { it.mrktctg == marketsCsv }
                 .map { it.symbol }
                 .distinct()
         }

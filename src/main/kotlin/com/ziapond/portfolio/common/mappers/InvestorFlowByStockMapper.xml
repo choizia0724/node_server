@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ziapond.portfolio.common.mappers.InvestorFlowByStockMapper">
+
+    <select id="searchStockFlows" resultType="com.ziapond.portfolio.project.web.dto.InvestorFlowRow">
+        SELECT
+        ymd,
+        bucket_start AS bucketStart,
+        NULL         AS marketCode,
+        symbol,
+        investor_type_code AS investorTypeCode,
+        investor_type_name AS investorTypeName,
+        net_qty      AS netQty,
+        net_amt      AS netAmt,
+        acml_net_qty AS acmlNetQty,
+        acml_net_amt AS acmlNetAmt
+        FROM stocks.investor_flow_stock_30m
+        <where>
+            <choose>
+                <when test="symbol != null and symbol != ''">
+                    AND symbol = #{symbol}
+                </when>
+                <otherwise>
+                    1=0
+                </otherwise>
+            </choose>
+            <if test="investorType != null and investorType != ''">
+                AND investor_type_code = #{investorType}
+            </if>
+            <if test="from != null and to != null">
+                AND ymd BETWEEN #{from} AND #{to}
+            </if>
+            <if test="from != null and to == null">
+                AND ymd &gt;= #{from}
+            </if>
+            <if test="from == null and to != null">
+                AND ymd &lt;= #{to}
+            </if>
+        </where>
+        ORDER BY ymd DESC, bucket_start DESC
+        LIMIT #{limit}
+        OFFSET #{offset}
+    </select>
+
+    <select id="countStockFlows" resultType="long">
+        SELECT COUNT(1)
+        FROM stocks.investor_flow_stock_30m
+        <where>
+            <choose>
+                <when test="symbol != null and symbol != ''">
+                    AND symbol = #{symbol}
+                </when>
+                <otherwise>
+                    1=0
+                </otherwise>
+            </choose>
+            <if test="investorType != null and investorType != ''">
+                AND investor_type_code = #{investorType}
+            </if>
+            <if test="from != null and to != null">
+                AND ymd BETWEEN #{from} AND #{to}
+            </if>
+            <if test="from != null and to == null">
+                AND ymd &gt;= #{from}
+            </if>
+            <if test="from == null and to != null">
+                AND ymd &lt;= #{to}
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,6 +1,6 @@
 package com.ziapond.portfolio.batch.web
 
-import com.ziapond.portfolio.project.mappers.StockListMapper
+import com.ziapond.portfolio.common.mappers.StockListMapper
 import com.ziapond.portfolio.batch.service.StockItemInfo
 import com.ziapond.portfolio.utils.LastWeekMonday
 import org.springframework.http.ResponseEntity

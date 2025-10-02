@@ -1,12 +1,13 @@
 package com.ziapond.portfolio.project.web
 
 
-import com.ziapond.portfolio.project.domain.StockTable
+import com.ziapond.portfolio.common.domain.StockTable
 import com.ziapond.portfolio.project.web.dto.PageResponse
 import com.ziapond.portfolio.project.web.dto.Pagination
-import com.ziapond.portfolio.project.mappers.StockListMapper
+import com.ziapond.portfolio.common.mappers.StockListMapper
 import com.ziapond.portfolio.project.web.dto.StockSearchRequest
 import jakarta.validation.Valid
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import kotlin.math.ceil
@@ -22,7 +23,8 @@ import kotlin.math.ceil
 @RestController
 @RequestMapping("/api/stocks")
 class StockSearchController(
-    private val stockMapper: StockListMapper
+    private val stockMapper: StockListMapper,
+    @Value("\${batch.investor.markets}") val marketsCsv: String,
 ) {
     @PostMapping("/search")
     fun search(@RequestBody @Valid req: StockSearchRequest): ResponseEntity<PageResponse<StockTable>> {

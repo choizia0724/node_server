@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ziapond.portfolio.project.mappers.StockListMapper">
+<mapper namespace="com.ziapond.portfolio.common.mappers.StockListMapper">
     <!-- 공통 WHERE 절 -->
     <sql id="stockWhere">
         <where>
@@ -28,7 +28,7 @@
         </where>
     </sql>
     <!-- 단건 업서트 -->
-    <insert id="upsertStock" parameterType="com.ziapond.portfolio.project.domain.StockTable">
+    <insert id="upsertStock" parameterType="com.ziapond.portfolio.common.domain.StockTable">
         INSERT INTO stocks.stock_table (
             symbol, name, basdt, isincd, mrktctg, crno, corpnm
         ) VALUES (
@@ -58,7 +58,7 @@
             corpnm  = EXCLUDED.corpnm
     </insert>
 
-    <select id="findBySymbolAndRange" resultType="com.ziapond.portfolio.project.domain.StockTable">
+    <select id="findBySymbolAndRange" resultType="com.ziapond.portfolio.common.domain.StockTable">
         SELECT p.symbol, p.name, p.basdt, p.isincd, p.mrktctg, p.crno, p.corpnm
             FROM stocks.stock_table p
         WHERE
@@ -68,7 +68,7 @@
     </select>
 
     <!-- 목록 조회 (페이징) -->
-    <select id="searchStocks" resultType="com.ziapond.portfolio.project.domain.StockTable">
+    <select id="searchStocks" resultType="com.ziapond.portfolio.common.domain.StockTable">
         SELECT symbol, name, basdt, isincd, mrktctg, crno, corpnm
             FROM stocks.stock_table
         <include refid="stockWhere"/>
