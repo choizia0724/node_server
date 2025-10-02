@@ -1,11 +1,11 @@
 package com.ziapond.portfolio.project.schedule
 
 import com.ziapond.portfolio.project.calendar.TradingCalendar
-import com.ziapond.portfolio.project.domain.StockData
-import com.ziapond.portfolio.project.mappers.StockDataMapper
-import com.ziapond.portfolio.project.service.StockDataAgg
-import com.ziapond.portfolio.project.service.MinuteCandleClient
-import com.ziapond.portfolio.project.service.StockItemInfo
+import com.ziapond.portfolio.common.domain.StockData
+import com.ziapond.portfolio.common.mappers.StockDataMapper
+import com.ziapond.portfolio.batch.service.StockDataAgg
+import com.ziapond.portfolio.batch.service.MinuteCandleClient
+import com.ziapond.portfolio.batch.service.StockItemInfo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component

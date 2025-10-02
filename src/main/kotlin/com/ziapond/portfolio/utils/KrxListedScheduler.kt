@@ -1,6 +1,6 @@
 package com.ziapond.portfolio.utils
 
-import com.ziapond.portfolio.project.service.StockItemInfo
+import com.ziapond.portfolio.batch.service.StockItemInfo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDate

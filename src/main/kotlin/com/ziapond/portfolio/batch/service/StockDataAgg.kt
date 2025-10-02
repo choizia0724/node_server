@@ -1,6 +1,6 @@
-package com.ziapond.portfolio.project.service
+package com.ziapond.portfolio.batch.service
 
-import com.ziapond.portfolio.project.domain.StockData
+import com.ziapond.portfolio.common.domain.StockData
 import java.time.*
 
 object StockDataAgg {

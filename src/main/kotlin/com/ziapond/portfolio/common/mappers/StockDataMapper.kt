@@ -1,6 +1,6 @@
-package com.ziapond.portfolio.project.mappers
+package com.ziapond.portfolio.common.mappers
 
-import com.ziapond.portfolio.project.domain.StockData
+import com.ziapond.portfolio.common.domain.StockData
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Param
 

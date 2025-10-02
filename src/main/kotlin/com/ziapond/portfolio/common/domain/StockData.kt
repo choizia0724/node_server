@@ -1,4 +1,4 @@
-package com.ziapond.portfolio.project.domain
+package com.ziapond.portfolio.common.domain
 
 import java.math.BigDecimal
 import java.time.OffsetDateTime

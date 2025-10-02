@@ -1,13 +1,11 @@
-package com.ziapond.portfolio.project.web
+package com.ziapond.portfolio.batch.web
 
-import com.ziapond.portfolio.project.domain.StockTable
 import com.ziapond.portfolio.project.mappers.StockListMapper
-import com.ziapond.portfolio.project.service.StockItemInfo
+import com.ziapond.portfolio.batch.service.StockItemInfo
 import com.ziapond.portfolio.utils.LastWeekMonday
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 /**
@@ -20,7 +18,7 @@ import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping("/api/sync")
-class StockController(
+class StockListBatchController(
     private val service: StockItemInfo,
     private val stockMapper: StockListMapper
 ) {

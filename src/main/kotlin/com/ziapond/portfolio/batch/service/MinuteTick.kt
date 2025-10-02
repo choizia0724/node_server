@@ -1,4 +1,4 @@
-package com.ziapond.portfolio.project.service
+package com.ziapond.portfolio.batch.service
 
 data class MinuteTick(
     val tsKst: java.time.OffsetDateTime,

@@ -1,4 +1,4 @@
-package com.ziapond.portfolio.project.service
+package com.ziapond.portfolio.batch.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ziapond.portfolio.project.domain.StockTable
