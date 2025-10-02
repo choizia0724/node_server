@@ -119,7 +119,7 @@ export default async function Page({ params }: { params: Promise<{ code: string 
     };
 
     const base = process.env.NEXT_PUBLIC_API_BASE!;
-    const dailyUrl = `${base}/proxy/stock/search/${code}`;
+    const dailyUrl = `${base}/proxy/stocks/search/${code}`;
 
     // 여러 번 호출해서 100개 이상 확보
     const dailyCandles: CandleDTO[] = await fetchDailyPaged(dailyUrl, dailyBody, {
@@ -130,7 +130,7 @@ export default async function Page({ params }: { params: Promise<{ code: string 
     // 참고: 투자자 현재가(로그만)
     try {
         await axios
-            .get(`${base}/proxy/stock/investor/${code}`, { timeout: 8000 })
+            .get(`${base}/proxy/stocks/investor/${code}`, { timeout: 8000 })
             .then((r) => console.log("investor:", r.data));
     } catch (e) {
         console.warn("investor fetch skipped:", (e as any)?.message);

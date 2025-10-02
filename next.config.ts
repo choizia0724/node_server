@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
+
 const nextConfig: NextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
@@ -7,7 +9,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://129.154.194.75:30020/:path*", // 백엔드 주소
+        destination: `${API_BASE}/api/:path*`, // 백엔드로 프록시
       },
     ];
   },

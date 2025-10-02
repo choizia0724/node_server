@@ -62,7 +62,7 @@ const getStockData = async (filters: {
   page?: number;
   size?: number;
 }): Promise<StockResponse> => {
-  const res = await axios.post<StockResponse>("/api/stock/search", filters, {
+  const res = await axios.post<StockResponse>("/api/stocks/search", filters, {
     headers: {
       "Cache-Control": "no-cache",
       "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export default function Home() {
     name: "",
     basdt: "",
     isincd: "",
-    mrktctg: "",
+    mrktctg: "KOSPI",
     crno: "",
     corpnm: "",
     page: 1,
