@@ -6,10 +6,12 @@
 *.iml
 
 ### Gradle ###
-
+.gradle/
 build/
 out/
-
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
 !**/src/main/**/build/
 !**/src/test/**/build/
 
