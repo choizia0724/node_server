@@ -4,7 +4,7 @@ WORKDIR /home/gradle/project
 
 COPY --chown=gradle:gradle gradlew gradlew
 COPY --chown=gradle:gradle gradle  gradle
-COPY --chown=gradle:gradle settings.gradle.kts build.gradle.kts gradle.properties ./
+COPY --chown=gradle:gradle settings.gradle.kts build.gradle.kts ./
 RUN chmod +x ./gradlew || true
 
 RUN ./gradlew --no-daemon --stacktrace --info --warning-mode all \
