@@ -28,31 +28,61 @@ spec:
               cpu: "500m"
               memory: "512Mi"
           env:
-            - name: SPRING_DATASOURCE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: stock-server-config
-                  key: SPRING_DATASOURCE_URL
-            - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                configMapKeyRef:
-                  name: stock-server-config
-                  key: SPRING_DATASOURCE_USERNAME
-            - name: SPRING_DATASOURCE_PASSWORD
+            - name: API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: stock-server-secrets
-                  key: SPRING_DATASOURCE_PASSWORD
-            - name: APP_KEY
+                  name: key-secret
+                  key: data-api-key
+            - name: PG_HOST
               valueFrom:
                 secretKeyRef:
-                  name: stock-server-secrets
-                  key: APP_KEY
-            - name: APP_SECRET
+                  name: pg-secret
+                  key: pg_host
+            - name: PG_PORT
               valueFrom:
                 secretKeyRef:
-                  name: stock-server-secrets
-                  key: APP_SECRET
+                  name: pg-secret
+                  key: pg_port
+            - name: PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pg-secret
+                  key: pg_user
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg-secret
+                  key: pg_password
+            - name: PG_DB
+              valueFrom:
+                secretKeyRef:
+                  name: pg-secret
+                  key: pg_db
+            - name: KIS_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: kis-secret
+                  key: KIS_BASE_URL
+            - name: KIS_WS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: kis-secret
+                  key: KIS_WS_URL
+            - name: KIS_APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kis-secret
+                  key: KIS_APP_KEY
+            - name: KIS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kis-secret
+                  key: KIS_SECRET_KEY
+            - name: WS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: kis-secret
+                  key: WS_PORT
 ---
 apiVersion: v1
 kind: Service
