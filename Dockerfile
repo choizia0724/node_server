@@ -2,14 +2,13 @@
 FROM gradle:8.10.2-jdk21 AS build
 WORKDIR /home/gradle/project
 COPY --chown=gradle:gradle . .
-RUN gradle --no-daemon :web:clean :web:bootJar -x test
+# gradle wrapper가 있다면 ./gradlew 사용 가능. 여기선 gradle 이미지라 gradle 명령도 OK
+RUN ./gradlew --no-daemon clean bootJar -x test || gradle --no-daemon clean bootJar -x test
 
 # ---- Run ----
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-ENV TZ=Asia/Seoul \
-    JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -XX:+UseContainerSupport" \
-    SPRING_PROFILES_ACTIVE=prod
+
 COPY --from=build /home/gradle/project/build/libs/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["sh","-c","java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
