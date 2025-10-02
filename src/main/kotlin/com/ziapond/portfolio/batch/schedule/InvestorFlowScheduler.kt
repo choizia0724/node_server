@@ -1,6 +1,6 @@
 package com.ziapond.portfolio.batch.schedule
 
-import com.ziapond.portfolio.project.calendar.TradingCalendar
+import com.ziapond.portfolio.calendar.TradingCalendar
 import com.ziapond.portfolio.common.domain.InvestorFlow
 import com.ziapond.portfolio.common.mappers.InvestorFlowMapper
 import com.ziapond.portfolio.batch.service.InvestorFlowClient
