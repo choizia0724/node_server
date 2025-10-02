@@ -1,4 +1,4 @@
-package com.ziapond.portfolio.project.calendar
+package com.ziapond.portfolio.calendar
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
