@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ziapond.portfolio.project.repository.StockMapper">
+<mapper namespace="com.ziapond.portfolio.project.mappers.StockListMapper">
     <!-- 공통 WHERE 절 -->
     <sql id="stockWhere">
         <where>
@@ -29,7 +29,7 @@
     </sql>
     <!-- 단건 업서트 -->
     <insert id="upsertStock" parameterType="com.ziapond.portfolio.project.domain.StockTable">
-        INSERT INTO stock_table (
+        INSERT INTO stocks.stock_table (
             symbol, name, basdt, isincd, mrktctg, crno, corpnm
         ) VALUES (
             #{r.symbol}, #{r.name}, #{r.basdt}, #{r.isincd}, #{r.mrktctg}, #{r.crno}, #{r.corpnm}
@@ -44,7 +44,7 @@
 
     <!-- 다건 업서트-->
     <insert id="upsertStocks" parameterType="java.util.List">
-        INSERT INTO stock_table (
+        INSERT INTO stocks.stock_table (
             symbol, name, basdt, isincd, mrktctg, crno, corpnm
         ) VALUES
         <foreach collection="list" item="r" separator=",">
@@ -60,22 +60,21 @@
 
     <select id="findBySymbolAndRange" resultType="com.ziapond.portfolio.project.domain.StockTable">
         SELECT p.symbol, p.name, p.basdt, p.isincd, p.mrktctg, p.crno, p.corpnm
-            FROM stock_table p
-        WHERE p.symbol = #{symbol}
+            FROM stocks.stock_table p
+        WHERE
+            p.symbol = #{symbol}
             AND p.basdt BETWEEN #{from} AND #{to}
             ORDER BY p.basdt
     </select>
 
-
-
     <!-- 목록 조회 (페이징) -->
     <select id="searchStocks" resultType="com.ziapond.portfolio.project.domain.StockTable">
         SELECT symbol, name, basdt, isincd, mrktctg, crno, corpnm
-        FROM stocks.stock_table
+            FROM stocks.stock_table
         <include refid="stockWhere"/>
-        ORDER BY basdt DESC
-        LIMIT #{limit}
-        OFFSET #{offset}
+            ORDER BY basdt DESC
+            LIMIT #{limit}
+            OFFSET #{offset}
     </select>
 
     <!-- 총 개수 -->

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ziapond.portfolio.project.repository.StockDataMapper">
+    <insert id="upsertAll" parameterType="java.util.List">
+        INSERT INTO stocks.stock_data(symbol, bucket_start, "open", high, low, "close", volume)
+        VALUES
+        <foreach collection="list" item="r" separator=",">
+            (#{r.symbol}, #{r.bucketStart}, #{r.open}, #{r.high}, #{r.low}, #{r.close}, #{r.volume})
+        </foreach>
+        ON CONFLICT (symbol, bucket_start) DO UPDATE SET
+        "open"  = EXCLUDED."open",
+        high    = EXCLUDED.high,
+        low     = EXCLUDED.low,
+        "close" = EXCLUDED."close",
+        volume  = EXCLUDED.volume
+    </insert>
+    <select id="getStockData">
+        SELECT * FROM stocks.stock_data
+
+    </select>
+</mapper>

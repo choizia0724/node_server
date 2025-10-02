@@ -1,4 +1,4 @@
-package com.ziapond.portfolio.project.repository
+package com.ziapond.portfolio.project.mappers
 
 import com.ziapond.portfolio.project.domain.StockTable
 import org.apache.ibatis.annotations.Mapper
@@ -13,7 +13,7 @@ import java.time.LocalDate
  * @copyright 2025,
  */
 @Mapper
-interface StockMapper {
+interface StockListMapper {
     fun upsertStock(@Param("r") row:StockTable) : Int
     fun upsertStocks(@Param("list") rows: List<StockTable>) : Int
     fun findBySymbolAndRange(symbol: String, from: LocalDate, to: LocalDate): List<StockTable>

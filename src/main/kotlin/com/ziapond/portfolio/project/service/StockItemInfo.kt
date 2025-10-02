@@ -2,7 +2,7 @@ package com.ziapond.portfolio.project.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ziapond.portfolio.project.domain.StockTable
-import com.ziapond.portfolio.project.repository.StockMapper
+import com.ziapond.portfolio.project.mappers.StockListMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
 @Service
 class StockItemInfo(
     private val builder: RestClient.Builder,
-    private val stockMapper: StockMapper,
+    private val stockMapper: StockListMapper,
     @Value("\${api.key}") private val api_key: String
 ) {
     // 주입 완료 후 접근되도록 lazy
@@ -29,6 +29,7 @@ class StockItemInfo(
 
     private val yyyymmdd = DateTimeFormatter.ofPattern("yyyyMMdd")
 
+    /** api 서버에서 가져오기*/
     fun getStockItemName(beginBasDt: LocalDate, numOfRows: Int = 3000): List<StockTable> {
         val node: JsonNode = rest.get()
             .uri { b ->

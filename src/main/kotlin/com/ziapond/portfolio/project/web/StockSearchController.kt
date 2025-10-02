@@ -4,7 +4,7 @@ package com.ziapond.portfolio.project.web
 import com.ziapond.portfolio.project.domain.StockTable
 import com.ziapond.portfolio.project.dto.PageResponse
 import com.ziapond.portfolio.project.dto.Pagination
-import com.ziapond.portfolio.project.repository.StockMapper
+import com.ziapond.portfolio.project.mappers.StockListMapper
 import com.ziapond.portfolio.project.dto.StockSearchRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -22,7 +22,7 @@ import kotlin.math.ceil
 @RestController
 @RequestMapping("/api/stocks")
 class StockSearchController(
-    private val stockMapper: StockMapper
+    private val stockMapper: StockListMapper
 ) {
     @PostMapping("/search")
     fun search(@RequestBody @Valid req: StockSearchRequest): ResponseEntity<PageResponse<StockTable>> {
