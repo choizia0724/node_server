@@ -3,6 +3,7 @@ WORKDIR /home/gradle/project
 
 # wrapper + 스크립트 먼저
 COPY --chown=gradle:gradle gradlew gradlew
+COPY --chown=gradle:gradle gradle  gradle
 COPY --chown=gradle:gradle settings.gradle.kts build.gradle.kts ./
 RUN chmod +x ./gradlew || true
 
