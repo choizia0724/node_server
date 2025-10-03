@@ -2,7 +2,7 @@ package com.ziapond.portfolio.batch.schedule
 
 import com.ziapond.portfolio.calendar.TradingCalendar
 import com.ziapond.portfolio.common.domain.InvestorFlow
-import com.ziapond.portfolio.common.mappers.InvestorFlowMapper
+import mappers.InvestorFlowMapper
 import com.ziapond.portfolio.batch.service.InvestorFlowClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
@@ -21,7 +21,7 @@ import java.time.*
 class InvestorFlowScheduler(
     private val calendar: TradingCalendar,
     private val client: InvestorFlowClient,
-    private val mapper: InvestorFlowMapper,
+    private val mapper: mappers.InvestorFlowMapper,
     @Value("\${batch.investor.markets}") marketsCsv: String
 ) {
     private val KST = ZoneId.of("Asia/Seoul")

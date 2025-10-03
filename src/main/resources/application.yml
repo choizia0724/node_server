@@ -11,7 +11,7 @@ api:
   key: ${API_KEY}
 
 mybatis:
-  mapper-locations: classpath:mappers/*.xml
+  mapper-locations: classpath:mappers/**/*.xml
   configuration:
     map-underscore-to-camel-case: true
 

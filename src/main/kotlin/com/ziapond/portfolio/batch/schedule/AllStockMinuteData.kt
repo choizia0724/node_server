@@ -4,7 +4,7 @@ import com.ziapond.portfolio.batch.service.MinuteCandleClient
 import com.ziapond.portfolio.batch.service.StockItemInfo
 import com.ziapond.portfolio.calendar.TradingCalendar
 import com.ziapond.portfolio.common.domain.StockData
-import com.ziapond.portfolio.common.mappers.StockDataMapper
+import mappers.StockDataMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -16,7 +16,7 @@ class AllStockMinuteData(
     private val calendar: TradingCalendar,
     private val stockItemInfo: StockItemInfo,
     private val minuteClient: MinuteCandleClient,
-    private val mapper: StockDataMapper,
+    private val mapper: mappers.StockDataMapper,
     @Value("\${batch.symbol.market:KOSPI}") private val marketCode: String
 ) {
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")

@@ -2,7 +2,7 @@ package com.ziapond.portfolio.batch.web
 
 import com.ziapond.portfolio.calendar.TradingCalendar
 import com.ziapond.portfolio.common.domain.StockData
-import com.ziapond.portfolio.common.mappers.StockDataMapper
+import mappers.StockDataMapper
 import com.ziapond.portfolio.batch.service.MinuteCandleClient
 import com.ziapond.portfolio.batch.service.StockDataAgg
 import com.ziapond.portfolio.batch.service.StockItemInfo
@@ -28,7 +28,7 @@ class StockDataBatchController(
     private val calendar: TradingCalendar,
     private val stockItemInfo: StockItemInfo,
     private val minuteClient: MinuteCandleClient,
-    private val stockDataMapper: StockDataMapper,
+    private val stockDataMapper: mappers.StockDataMapper,
     @Value("\${batch.investor.markets}") private val marketsCsv: String,
 ) {
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")

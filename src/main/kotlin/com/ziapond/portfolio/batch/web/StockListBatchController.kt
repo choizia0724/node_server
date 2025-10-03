@@ -1,6 +1,6 @@
 package com.ziapond.portfolio.batch.web
 
-import com.ziapond.portfolio.common.mappers.StockListMapper
+import mappers.StockListMapper
 import com.ziapond.portfolio.batch.service.StockItemInfo
 import com.ziapond.portfolio.utils.LastWeekMonday
 import org.springframework.http.ResponseEntity
@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter
 @RequestMapping("/api/sync")
 class StockListBatchController(
     private val service: StockItemInfo,
-    private val stockMapper: StockListMapper
+    private val stockMapper: mappers.StockListMapper
 ) {
     private val yyyymmdd = DateTimeFormatter.BASIC_ISO_DATE // "yyyyMMdd"
 

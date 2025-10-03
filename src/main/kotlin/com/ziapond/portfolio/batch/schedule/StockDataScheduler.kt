@@ -2,7 +2,7 @@ package com.ziapond.portfolio.project.schedule
 
 import com.ziapond.portfolio.calendar.TradingCalendar
 import com.ziapond.portfolio.common.domain.StockData
-import com.ziapond.portfolio.common.mappers.StockDataMapper
+import mappers.StockDataMapper
 import com.ziapond.portfolio.batch.service.StockDataAgg
 import com.ziapond.portfolio.batch.service.MinuteCandleClient
 import com.ziapond.portfolio.batch.service.StockItemInfo
@@ -17,7 +17,7 @@ class StockDataScheduler(
     private val calendar: TradingCalendar,
     private val stockItemInfo: StockItemInfo,
     private val minuteClient: MinuteCandleClient,
-    private val stockDataMapper: StockDataMapper,
+    private val stockDataMapper: mappers.StockDataMapper,
     @Value("\${schedules.krx.listed.basdt-offset-days:7}") private val basdtOffsetDays: Long
 ) {
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")

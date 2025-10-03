@@ -2,7 +2,7 @@ package com.ziapond.portfolio.batch.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ziapond.portfolio.common.domain.StockTable
-import com.ziapond.portfolio.common.mappers.StockListMapper
+import mappers.StockListMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
 @Service
 class StockItemInfo(
     private val builder: RestClient.Builder,
-    private val stockMapper: StockListMapper,
+    private val stockMapper: mappers.StockListMapper,
     @Value("\${api.key}") private val api_key: String
 ) {
     // 주입 완료 후 접근되도록 lazy

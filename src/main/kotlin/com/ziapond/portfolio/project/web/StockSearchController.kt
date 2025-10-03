@@ -4,7 +4,7 @@ package com.ziapond.portfolio.project.web
 import com.ziapond.portfolio.common.domain.StockTable
 import com.ziapond.portfolio.project.web.dto.PageResponse
 import com.ziapond.portfolio.project.web.dto.Pagination
-import com.ziapond.portfolio.common.mappers.StockListMapper
+import mappers.StockListMapper
 import com.ziapond.portfolio.project.web.dto.StockSearchRequest
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Value
@@ -23,7 +23,7 @@ import kotlin.math.ceil
 @RestController
 @RequestMapping("/api/stocks")
 class StockSearchController(
-    private val stockMapper: StockListMapper,
+    private val stockMapper: mappers.StockListMapper,
     @Value("\${batch.investor.markets}") val marketsCsv: String,
 ) {
     @PostMapping("/search")
