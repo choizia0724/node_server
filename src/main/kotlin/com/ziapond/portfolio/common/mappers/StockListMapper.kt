@@ -22,8 +22,6 @@ interface StockListMapper {
         @Param("symbol") symbol: String?,
         @Param("name") name: String?,
         @Param("mrktctg") mrktctg: String?,
-        @Param("from") from: LocalDate?,
-        @Param("to") to: LocalDate?,
         @Param("limit") limit: Int,
         @Param("offset") offset: Int
     ): List<StockTable>
@@ -32,7 +30,5 @@ interface StockListMapper {
         @Param("symbol") symbol: String?,
         @Param("name") name: String?,
         @Param("mrktctg") mrktctg: String?,
-        @Param("from") from: LocalDate?,
-        @Param("to") to: LocalDate?,
     ): Long
 }

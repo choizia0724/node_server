@@ -36,8 +36,6 @@ class StockSearchController(
             symbol = req.symbol,
             name = req.name,
             mrktctg = req.mrktctg,
-            from = req.from,
-            to = req.to
         )
 
         val rows: List<StockTable> = if (total > 0)
@@ -45,8 +43,6 @@ class StockSearchController(
                 symbol = req.symbol,
                 name = req.name,
                 mrktctg = req.mrktctg,
-                from = req.from,
-                to = req.to,
                 limit = limit,
                 offset = offset
             )

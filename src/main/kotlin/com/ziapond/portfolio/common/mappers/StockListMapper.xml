@@ -16,15 +16,6 @@
             <if test="mrktctg != null and mrktctg != ''">
                 AND mrktctg = #{mrktctg}
             </if>
-            <if test="from != null and to != null">
-                AND basdt BETWEEN #{from} AND #{to}
-            </if>
-            <if test="from != null and to == null">
-                AND basdt &gt;= #{from}
-            </if>
-            <if test="from == null and to != null">
-                AND basdt &lt;= #{to}
-            </if>
         </where>
     </sql>
     <!-- 단건 업서트 -->
@@ -63,7 +54,6 @@
             FROM stocks.stock_table p
         WHERE
             p.symbol = #{symbol}
-            AND p.basdt BETWEEN #{from} AND #{to}
             ORDER BY p.basdt
     </select>
 
