@@ -2,12 +2,12 @@ package com.ziapond.portfolio.batch.web
 
 import com.ziapond.portfolio.calendar.TradingCalendar
 import com.ziapond.portfolio.common.domain.StockData
-import mappers.StockDataMapper
 import com.ziapond.portfolio.batch.service.MinuteCandleClient
 import com.ziapond.portfolio.batch.service.StockDataAgg
 import com.ziapond.portfolio.batch.service.StockItemInfo
 import com.ziapond.portfolio.batch.web.dto.Aggregate30mRequest
 import com.ziapond.portfolio.batch.web.dto.Aggregate30mResponse
+import com.ziapond.portfolio.common.mappers.StockDataMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -28,7 +28,7 @@ class StockDataBatchController(
     private val calendar: TradingCalendar,
     private val stockItemInfo: StockItemInfo,
     private val minuteClient: MinuteCandleClient,
-    private val stockDataMapper: mappers.StockDataMapper,
+    private val stockDataMapper: StockDataMapper,
     @Value("\${batch.investor.markets}") private val marketsCsv: String,
 ) {
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")

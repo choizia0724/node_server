@@ -1,8 +1,8 @@
 package com.ziapond.portfolio.project.web
 
+import com.ziapond.portfolio.common.mappers.InvestorFlowByStockMapper
+import com.ziapond.portfolio.common.mappers.InvestorFlowMapper
 import com.ziapond.portfolio.project.web.dto.*
-import mappers.InvestorFlowMapper
-import mappers.InvestorFlowByStockMapper
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -20,8 +20,8 @@ import kotlin.math.ceil
 @RestController
 @RequestMapping("/api/investor")
 class StockInvestorController(
-    private val marketMapper: mappers.InvestorFlowMapper,
-    private val stockMapper: mappers.InvestorFlowByStockMapper
+    private val marketMapper: InvestorFlowMapper,
+    private val stockMapper: InvestorFlowByStockMapper
 ) {
     @PostMapping("/flow/search")
     fun search(@RequestBody @Valid req: InvestorFlowSearchRequest): ResponseEntity<PageResponse<InvestorFlowRow>> {

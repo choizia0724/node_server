@@ -1,11 +1,11 @@
-package com.ziapond.portfolio.project.schedule
+package com.ziapond.portfolio.batch.schedule
 
 import com.ziapond.portfolio.calendar.TradingCalendar
 import com.ziapond.portfolio.common.domain.StockData
-import mappers.StockDataMapper
 import com.ziapond.portfolio.batch.service.StockDataAgg
 import com.ziapond.portfolio.batch.service.MinuteCandleClient
 import com.ziapond.portfolio.batch.service.StockItemInfo
+import com.ziapond.portfolio.common.mappers.StockDataMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -17,7 +17,7 @@ class StockDataScheduler(
     private val calendar: TradingCalendar,
     private val stockItemInfo: StockItemInfo,
     private val minuteClient: MinuteCandleClient,
-    private val stockDataMapper: mappers.StockDataMapper,
+    private val stockDataMapper: StockDataMapper,
     @Value("\${schedules.krx.listed.basdt-offset-days:7}") private val basdtOffsetDays: Long
 ) {
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")

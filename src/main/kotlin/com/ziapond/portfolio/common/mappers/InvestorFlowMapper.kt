@@ -1,4 +1,4 @@
-package mappers
+package com.ziapond.portfolio.common.mappers
 
 import com.ziapond.portfolio.common.domain.InvestorFlow
 import com.ziapond.portfolio.project.web.dto.InvestorFlowRow

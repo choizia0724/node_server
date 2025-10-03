@@ -3,30 +3,44 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="mappers.InvestorFlowByStockMapper">
-
-    <select id="searchStockFlows" resultType="com.ziapond.portfolio.project.web.dto.InvestorFlowRow">
+<mapper namespace="com.ziapond.portfolio.common.mappers.InvestorFlowMapper">
+    <insert id="upsertAll" parameterType="java.util.List">
+        INSERT INTO stocks.investor_flow_30m(
+        ymd, bucket_start, market_code, investor_type_code, investor_type_name,
+        net_qty, net_amt, acml_net_qty, acml_net_amt
+        )
+        VALUES
+        <foreach collection="list" item="r" separator=",">
+            (
+            #{r.ymd}, #{r.bucketStart}, #{r.marketCode}, #{r.investorTypeCode}, #{r.investorTypeName},
+            #{r.netQty}, #{r.netAmt}, #{r.acmlNetQty}, #{r.acmlNetAmt}
+            )
+        </foreach>
+        ON CONFLICT (ymd, bucket_start, market_code, investor_type_code) DO UPDATE SET
+        investor_type_name = EXCLUDED.investor_type_name,
+        net_qty            = EXCLUDED.net_qty,
+        net_amt            = EXCLUDED.net_amt,
+        acml_net_qty       = EXCLUDED.acml_net_qty,
+        acml_net_amt       = EXCLUDED.acml_net_amt
+    </insert>
+    <!-- 최신 날짜/시간 내림차순 + 페이징 -->
+    <select id="searchMarketFlows" resultType="com.ziapond.portfolio.project.web.dto.InvestorFlowRow">
         SELECT
         ymd,
         bucket_start AS bucketStart,
-        NULL         AS marketCode,
-        symbol,
+        market_code  AS marketCode,
+        NULL         AS symbol,
         investor_type_code AS investorTypeCode,
         investor_type_name AS investorTypeName,
         net_qty      AS netQty,
         net_amt      AS netAmt,
         acml_net_qty AS acmlNetQty,
         acml_net_amt AS acmlNetAmt
-        FROM stocks.investor_flow_stock_30m
+        FROM stocks.investor_flow_30m
         <where>
-            <choose>
-                <when test="symbol != null and symbol != ''">
-                    AND symbol = #{symbol}
-                </when>
-                <otherwise>
-                    1=0
-                </otherwise>
-            </choose>
+            <if test="marketCode != null and marketCode != ''">
+                AND market_code = #{marketCode}
+            </if>
             <if test="investorType != null and investorType != ''">
                 AND investor_type_code = #{investorType}
             </if>
@@ -45,18 +59,13 @@
         OFFSET #{offset}
     </select>
 
-    <select id="countStockFlows" resultType="long">
+    <select id="countMarketFlows" resultType="long">
         SELECT COUNT(1)
-        FROM stocks.investor_flow_stock_30m
+        FROM stocks.investor_flow_30m
         <where>
-            <choose>
-                <when test="symbol != null and symbol != ''">
-                    AND symbol = #{symbol}
-                </when>
-                <otherwise>
-                    1=0
-                </otherwise>
-            </choose>
+            <if test="marketCode != null and marketCode != ''">
+                AND market_code = #{marketCode}
+            </if>
             <if test="investorType != null and investorType != ''">
                 AND investor_type_code = #{investorType}
             </if>

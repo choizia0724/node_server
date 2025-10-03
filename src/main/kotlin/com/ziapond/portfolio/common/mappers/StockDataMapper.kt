@@ -1,4 +1,4 @@
-package mappers
+package com.ziapond.portfolio.common.mappers
 
 import com.ziapond.portfolio.common.domain.StockData
 import org.apache.ibatis.annotations.Mapper

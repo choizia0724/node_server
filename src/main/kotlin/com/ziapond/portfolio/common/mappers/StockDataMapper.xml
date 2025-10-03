@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="mappers.StockDataMapper">
+<mapper namespace="com.ziapond.portfolio.common.mappers.StockDataMapper">
     <insert id="upsertAll" parameterType="java.util.List">
         INSERT INTO stocks.stock_data(symbol, bucket_start, "open", high, low, "close", volume)
         VALUES

@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="mappers.StockListMapper">
+<mapper namespace="com.ziapond.portfolio.common.mappers.StockListMapper">
     <!-- 공통 WHERE 절 -->
     <sql id="stockWhere">
         <where>
