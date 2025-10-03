@@ -31,6 +31,8 @@ interface StockListMapper {
      fun countStocks(
         @Param("symbol") symbol: String?,
         @Param("name") name: String?,
-        @Param("mrktctg") mrktctg: String?
+        @Param("mrktctg") mrktctg: String?,
+        @Param("from") from: LocalDate?,
+        @Param("to") to: LocalDate?,
     ): Long
 }
