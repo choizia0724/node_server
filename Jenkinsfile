@@ -61,6 +61,8 @@ pipeline {
             stock-server-container=docker.io/choizia/stock-server-app:latest
 
           kubectl rollout status deployment/stock-server-deployment --timeout=180s
+
+          kubectl delete pods -l app=stock-server-app
         '''
       }
     }
