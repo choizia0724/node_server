@@ -47,6 +47,9 @@ kis:
   minute-value:
     path: /uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice
     tr_id: FHKST03010200
+  daily-minute-value:
+    path: /uapi/domestic-stock/v1/quotations/inquire-time-dailychartprice
+    tr_id: FHKST03010230
 
 batch:
   investor:

@@ -45,7 +45,7 @@ class AllStockMinuteData(
             minuteClient.fetchWindowTicks(sym, windowStart, windowEnd).map { t ->
                 StockData(
                     symbol = sym,
-                    bucketStart  = t.tsKst,
+                    tsKst  = t.tsKst,
                     open   = t.open,
                     high   = t.high,
                     low    = t.low,

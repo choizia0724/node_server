@@ -12,7 +12,7 @@ import java.time.OffsetDateTime
  */
 data class StockData(
     val symbol: String,
-    val bucketStart: OffsetDateTime,
+    val tsKst: OffsetDateTime,
     val open: BigDecimal,
     val high: BigDecimal,
     val low: BigDecimal,
