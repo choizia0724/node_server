@@ -26,9 +26,9 @@ interface StockListMapper {
         @Param("offset") offset: Int
     ): List<StockTable>
 
-     fun countStocks(
+    fun countStocks(
         @Param("symbol") symbol: String?,
         @Param("name") name: String?,
-        @Param("mrktctg") mrktctg: String?,
+        @Param("mrktctg") mrktctg: String?
     ): Long
 }

@@ -30,12 +30,12 @@ class StockSearchController(
     fun search(@RequestBody @Valid req: StockSearchRequest): ResponseEntity<PageResponse<StockTable>> {
         val page  = req.page.coerceAtLeast(1)
         val limit = req.limit.coerceIn(1, 5000)
-        val offset = (page - 1) * limit
+        val offset = page * limit
 
         val total: Long = stockMapper.countStocks(
             symbol = req.symbol,
             name = req.name,
-            mrktctg = req.mrktctg,
+            mrktctg = marketsCsv,
         )
 
         val rows: List<StockTable> = if (total > 0)
