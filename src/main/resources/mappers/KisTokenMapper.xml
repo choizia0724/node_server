@@ -1,0 +1,36 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziapond.portfolio.common.mappers.KisTokenMapper">
+
+    <resultMap id="KisTokenMap" type="com.ziapond.portfolio.common.domain.KisToken">
+        <id     property="id"         column="id"/>
+        <result property="tokenType"  column="token_type"/>
+        <result property="dateKey"    column="date_key"/>
+        <result property="accessToken" column="access_token"/>
+        <result property="issuedAt"   column="issued_at"/>
+        <result property="expiresAt"  column="expires_at"/>
+        <result property="meta"       column="meta"/>
+    </resultMap>
+
+    <select id="selectByTypeAndDate" resultMap="KisTokenMap">
+        SELECT id, token_type, date_key, access_token, issued_at, expires_at, meta
+        FROM stocks.kis_token
+        WHERE token_type = #{tokenType}
+          AND date_key   = #{dateKey}
+            LIMIT 1
+    </select>
+
+    <insert id="upsert" parameterType="com.ziapond.portfolio.common.domain.KisToken">
+        INSERT INTO stocks.kis_token
+            (token_type, date_key, access_token, issued_at, expires_at, meta)
+        VALUES
+            (#{tokenType}, #{dateKey}, #{accessToken}, #{issuedAt}, #{expiresAt}, CAST(#{meta} AS jsonb))
+            ON CONFLICT (token_type, date_key) DO UPDATE
+                                                      SET access_token = EXCLUDED.access_token,
+                                                      issued_at    = EXCLUDED.issued_at,
+                                                      expires_at   = EXCLUDED.expires_at,
+                                                      meta         = EXCLUDED.meta
+    </insert>
+
+</mapper>

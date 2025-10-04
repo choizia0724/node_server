@@ -1,4 +1,6 @@
-CREATE TABLE stock_table (
+CREATE SCHEMA IF NOT EXISTS stocks;
+
+CREATE TABLE stocks.stock_table (
                              symbol    VARCHAR(20)  NOT NULL,          -- 종목코드 (예: 005930)
                              name      VARCHAR(200) NOT NULL,          -- 종목명 (국문)
                              basdt     DATE         NOT NULL,          -- 기준일자 (yyyy-MM-dd)
@@ -8,6 +10,9 @@ CREATE TABLE stock_table (
                              corpnm    VARCHAR(200),                   -- 발행사/법인명
                              PRIMARY KEY (symbol)
 );
+
+ALTER TABLE stocks.stock_table
+    ADD COLUMN use_or_not BOOLEAN DEFAULT FALSE;
 
 -- 조회 성능 보조 인덱스 (선택)
 CREATE INDEX idx_stock_table_isincd   ON stock_table (isincd);

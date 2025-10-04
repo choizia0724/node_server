@@ -28,7 +28,7 @@ class InvestorFlowScheduler(
     private val markets: List<String> = marketsCsv.split(',').map { it.trim() }.filter { it.isNotEmpty() }
 
     /** 평일 09:30~15:30 매 30분 */
-    @Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
+    //@Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
     fun runHalfHourly() {
         val now = ZonedDateTime.now(KST)
         val today = now.toLocalDate()

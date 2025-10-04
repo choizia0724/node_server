@@ -3,9 +3,12 @@ package com.ziapond.portfolio.kis.http
 import com.fasterxml.jackson.databind.JsonNode
 import com.ziapond.portfolio.kis.auth.KisTokenProvider
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestClient
@@ -22,31 +25,46 @@ class KisHttp(
     @Value("\${kis.app-secret}") private val appSecret: String,
     @Value("\${kis.retry.max-attempts:5}") private val maxAttempts: Int,
     @Value("\${kis.retry.base-delay-ms:250}") private val baseDelayMs: Long,
-    @Value("\${kis.retry.max-delay-ms:3000}") private val maxDelayMs: Long
+    @Value("\${kis.retry.max-delay-ms:3000}") private val maxDelayMs: Long,
+    private val tokenProvider: KisTokenProvider
 ) {
     private val rest: RestClient = builder.baseUrl(baseUrl).build()
 
     fun getJson(
         path: String,
         query: Map<String, Any?> = emptyMap(),
-        headers: Map<String, String> = emptyMap(),
+        reqHeaders: HttpHeaders = HttpHeaders(),
         trId: String? = null,
-        auth: Boolean = true
-    ): JsonNode? = executeWithRetries(
-        build = {
-            rest.get()
-                .uri { b ->
-                    b.path(path); query.forEach { (k, v) -> if (v != null) b.queryParam(k, v) }; b.build()
+        auth: Boolean = true,
+        custType: String = "P"
+    ): JsonNode? = executeWithRetries {
+        val rest = rest.get()
+            .uri { b ->
+                b.path(path)
+                query.forEach { (k, v) ->
+                    if (v != null) b.queryParam(k, v)
                 }
-                .headers { h ->
-                    h.add("appkey", appKey); h.add("appsecret", appSecret); h.add("content-type", "application/json")
-                    if (auth) h.add("authorization", "Bearer ${provider.accessToken()}")
-                    if (!trId.isNullOrBlank()) h.add("tr_id", trId)
-                    headers.forEach { (k, v) -> h.add(k, v) }
+                b.build()
+            }
+            .headers { h ->
+                // 우리 기본 헤더 (중복 방지: set 사용)
+                h.set("appkey", appKey)
+                h.set("appsecret", appSecret)
+                h.set("custtype", custType)
+                h.set("Content-Type", "application/json; charset=utf-8")
+
+                if (auth) {
+                    val token = tokenProvider.getRestToken()
+                    require(!token.isNullOrBlank()) { "KIS access token is blank" }
+                    h.set("Authorization","Bearer ${token}")
                 }
-                .retrieve()
-        }
-    )
+
+                trId?.takeIf { it.isNotBlank() }?.let { h.set("tr_id", it) }
+
+                h.addAll(reqHeaders)
+            }
+            rest.retrieve()
+    }
 
     fun postJson(
         path: String,

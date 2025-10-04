@@ -1,3 +1,4 @@
+CREATE SCHEMA IF NOT EXISTS stocks;
 
 CREATE TABLE IF NOT EXISTS stocks.stock_data (
                                                  symbol        VARCHAR(20)  NOT NULL,

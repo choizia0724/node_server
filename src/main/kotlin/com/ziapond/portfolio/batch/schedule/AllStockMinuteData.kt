@@ -25,7 +25,7 @@ class AllStockMinuteData(
      * 평일 09:01~15:30 매 1분(정각)에 직전 1분 구간을 수집
      * 예: 09:02에 실행 → [09:01, 09:02) 구간 1분틱 저장
      */
-    @Scheduled(cron = "0 * 9-15 * * MON-FRI", zone = "Asia/Seoul")
+    //@Scheduled(cron = "0 * 9-15 * * MON-FRI", zone = "Asia/Seoul")
     fun collectPerMinute() {
         val now = ZonedDateTime.now(KST).withSecond(0).withNano(0)
         val today = now.toLocalDate()
@@ -45,7 +45,7 @@ class AllStockMinuteData(
             minuteClient.fetchWindowTicks(sym, windowStart, windowEnd).map { t ->
                 StockData(
                     symbol = sym,
-                    tsKst  = t.tsKst,
+                    bucketStart  = t.tsKst,
                     open   = t.open,
                     high   = t.high,
                     low    = t.low,

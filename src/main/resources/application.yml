@@ -33,7 +33,7 @@ schedules:
 
 kis:
   base-url: https://openapi.koreainvestment.com:9443
-  token-path: /oauth2/tokenP
+  ws-url: ws://ops.koreainvestment.com:21000
   app-key: ${APP_KEY}
   app-secret: ${APP_SECRET}
   refresh-skew-seconds: 60
@@ -43,14 +43,22 @@ kis:
     max-delay-ms: 3000
   investor:
     path: /uapi/domestic-stock/v1/quotations/inquire-investor-time-by-market
-    tr_id: FHPTJ04030000
+    tr-id: FHPTJ04030000
   minute-value:
     path: /uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice
-    tr_id: FHKST03010200
+    tr-id: FHKST03010200
   daily-minute-value:
     path: /uapi/domestic-stock/v1/quotations/inquire-time-dailychartprice
-    tr_id: FHKST03010230
+    tr-id: FHKST03010230
+  oauth:
+    rest-token-path: /oauth2/tokenP
+    ws-token-path: /oauth2/Approval
+    grant-type: client_credentials
+
+
 
 batch:
   investor:
+    markets: KOSPI
+  daily:
     markets: KOSPI

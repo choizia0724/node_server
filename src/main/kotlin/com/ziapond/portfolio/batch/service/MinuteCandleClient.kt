@@ -11,7 +11,7 @@ import java.time.*
 @Service
 class MinuteCandleClient(
     private val http: KisHttp,
-    @Value("\${kis.minute-value.tr_id}") private val trId: String,
+    @Value("\${kis.minute-value.tr-id}") private val trId: String,
     @Value("\${kis.minute-value.path}") private val path: String,
 ) {
     data class MinuteTick(
@@ -38,7 +38,6 @@ class MinuteCandleClient(
                 "FID_INPUT_HOUR_1" to endStr
             ),
             trId = trId,
-            headers = mapOf("tr_cont" to "")    // 최초 호출
         )
 
         // 응답 위치(output2 혹은 response.body.items.item)

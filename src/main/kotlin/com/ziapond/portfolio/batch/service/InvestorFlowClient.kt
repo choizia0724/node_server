@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter
 @Service
 class InvestorFlowClient(
     private val http: KisHttp,
-    @Value("\${kis.investor.tr_id}") private val trId: String,
+    @Value("\${kis.investor.tr-id}") private val trId: String,
     @Value("\${kis.investor.path}") private val path: String,
 ) {
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")
@@ -44,7 +44,6 @@ class InvestorFlowClient(
                 "FID_INPUT_HOUR_1"       to endStr
             ),
             trId = trId,
-            headers = mapOf("tr_cont" to "")
         )
 
         val arr = node?.path("output2")

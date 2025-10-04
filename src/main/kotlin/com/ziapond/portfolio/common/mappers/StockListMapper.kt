@@ -1,6 +1,7 @@
 package com.ziapond.portfolio.common.mappers
 
 import com.ziapond.portfolio.common.domain.StockTable
+import jakarta.annotation.Nullable
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Param
 import java.time.LocalDate
@@ -22,8 +23,8 @@ interface StockListMapper {
         @Param("symbol") symbol: String?,
         @Param("name") name: String?,
         @Param("mrktctg") mrktctg: String?,
-        @Param("limit") limit: Int,
-        @Param("offset") offset: Int
+        @Param("limit") limit: Int?,
+        @Param("offset") offset: Int?
     ): List<StockTable>
 
     fun countStocks(

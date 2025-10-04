@@ -1,5 +1,6 @@
 package com.ziapond.portfolio.batch.web
 
+import com.ziapond.portfolio.batch.service.DailyMinuteCollector
 import com.ziapond.portfolio.calendar.TradingCalendar
 import com.ziapond.portfolio.common.domain.StockData
 import com.ziapond.portfolio.batch.service.MinuteCandleClient
@@ -7,17 +8,17 @@ import com.ziapond.portfolio.batch.service.StockDataAgg
 import com.ziapond.portfolio.batch.service.StockItemInfo
 import com.ziapond.portfolio.batch.web.dto.Aggregate30mRequest
 import com.ziapond.portfolio.batch.web.dto.Aggregate30mResponse
+import com.ziapond.portfolio.batch.web.dto.SyncDailyMinuteRequest
+import com.ziapond.portfolio.batch.web.dto.SyncDailyMinuteResponse
 import com.ziapond.portfolio.common.mappers.StockDataMapper
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
 import kotlin.math.max
 
 
@@ -30,6 +31,7 @@ class StockDataBatchController(
     private val minuteClient: MinuteCandleClient,
     private val stockDataMapper: StockDataMapper,
     @Value("\${batch.investor.markets}") private val marketsCsv: String,
+    private val collector: DailyMinuteCollector,
 ) {
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")
 
@@ -74,7 +76,25 @@ class StockDataBatchController(
             )
         )
     }
+    @PostMapping("/aggregateDaily120m")
+    fun sync(@RequestBody req: SyncDailyMinuteRequest): ResponseEntity<SyncDailyMinuteResponse> {
+        val time = req.time
+        val date = req.ymd?.let(LocalDate::parse) ?: LocalDate.now(KST)
 
+        val processed: List<String> = collector.collectForDate(time, date, req.symbols)
+
+        val body = SyncDailyMinuteResponse(
+            requestedDate = date.toString(),
+            requestedTime = req.time,
+            processedSymbols = processed
+        )
+
+        return if (processed.isNotEmpty()) {
+            ResponseEntity.ok(body)
+        } else {
+            ResponseEntity.status(HttpStatus.CONFLICT).body(body)
+        }
+    }
     private fun snapToHalfHour(t: LocalTime): LocalTime =
         if (t.minute < 30) t.withMinute(30).withSecond(0)
         else t.withMinute(0).withSecond(0).plusHours(1)

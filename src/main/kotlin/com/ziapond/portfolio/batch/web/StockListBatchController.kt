@@ -1,10 +1,16 @@
 package com.ziapond.portfolio.batch.web
 
+import com.ziapond.portfolio.batch.service.DailyMinuteCollector
 import com.ziapond.portfolio.batch.service.StockItemInfo
+import com.ziapond.portfolio.batch.web.dto.SyncDailyMinuteRequest
+import com.ziapond.portfolio.batch.web.dto.SyncDailyMinuteResponse
 import com.ziapond.portfolio.utils.LastWeekMonday
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 /**
@@ -19,8 +25,10 @@ import java.time.format.DateTimeFormatter
 @RequestMapping("/api/sync")
 class StockListBatchController(
     private val service: StockItemInfo,
+
 ) {
     private val yyyymmdd = DateTimeFormatter.BASIC_ISO_DATE // "yyyyMMdd"
+    private val KST: ZoneId = ZoneId.of("Asia/Seoul")
 
     /**
      * KRX 상장종목 기본정보 동기화 트리거
@@ -43,5 +51,7 @@ class StockListBatchController(
             )
         )
     }
+
+
 
 }
