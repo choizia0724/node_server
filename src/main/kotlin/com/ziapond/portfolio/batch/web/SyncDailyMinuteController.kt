@@ -35,6 +35,7 @@ class SyncDailyMinuteController(
         return ResponseEntity.ok(
             SyncDailyMinuteResponse(
                 requestedDate = date.toString(),
+                requestedTime = time,
                 processedSymbols = count
             )
         )

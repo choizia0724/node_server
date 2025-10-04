@@ -10,5 +10,6 @@ package com.ziapond.portfolio.batch.web.dto
 
 data class SyncDailyMinuteResponse(
     val requestedDate: String,
+    val requestedTime: String?,
     val processedSymbols: Int
 )
