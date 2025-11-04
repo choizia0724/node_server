@@ -44,11 +44,13 @@ class DailyMinuteValueClient(
 
         ymd.atTime(t).atZone(KST).toOffsetDateTime()
 
+        println("ymd: "+ ymd.format(yyyymmdd) +", t: "+time)
+
         val query = buildMap {
             put("FID_COND_MRKT_DIV_CODE", "J")
             put("FID_INPUT_ISCD", symbol6)
             put("FID_INPUT_DATE_1", ymd.format(yyyymmdd))
-            time?.takeIf { it.isNotBlank() }?.let { put("FID_INPUT_HOUR_1", it) } // 옵션
+            put("FID_INPUT_HOUR_1", time)
             put("FID_PW_DATA_INCU_YN","Y")
         }
 

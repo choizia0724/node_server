@@ -16,7 +16,7 @@ import java.time.LocalDate
 
 @Mapper
 interface InvestorFlowMapper {
-    fun upsertAll(@Param("list") rows: List<InvestorFlow>): Int
+    fun upsertInvestorFlows(@Param("list") list: List<InvestorFlow>): Int
     fun searchMarketFlows(
         @Param("marketCode") marketCode: String?,
         @Param("investorType") investorType: String?,

@@ -4,6 +4,9 @@ import com.ziapond.portfolio.calendar.TradingCalendar
 import com.ziapond.portfolio.common.domain.InvestorFlow
 import com.ziapond.portfolio.common.mappers.InvestorFlowMapper
 import com.ziapond.portfolio.batch.service.InvestorFlowClient
+import com.ziapond.portfolio.batch.service.StockDataAgg
+import com.ziapond.portfolio.batch.service.StockItemInfo
+import com.ziapond.portfolio.common.domain.StockData
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -20,6 +23,7 @@ import java.time.*
 @Component
 class InvestorFlowScheduler(
     private val calendar: TradingCalendar,
+    private val stockItemInfo: StockItemInfo,
     private val client: InvestorFlowClient,
     private val mapper: InvestorFlowMapper,
     @Value("\${batch.investor.markets}") marketsCsv: String
@@ -28,21 +32,25 @@ class InvestorFlowScheduler(
     private val markets: List<String> = marketsCsv.split(',').map { it.trim() }.filter { it.isNotEmpty() }
 
     /** 평일 09:30~15:30 매 30분 */
-    //@Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
     fun runHalfHourly() {
         val now = ZonedDateTime.now(KST)
         val today = now.toLocalDate()
         if (!calendar.isTradingDay(today)) return
 
-        val windowEnd = snapToHalfHour(now.toLocalTime())   // 09:30, 10:00, ...
-        val windowStart = windowEnd.minusMinutes(30)
+        val kospiSymbols = stockItemInfo.getSymbolsFromDb(null,null, "KOSPI")
+            .map { it.symbol }
+            .distinct()
+
+        val mkt="J"
 
         val batch = mutableListOf<InvestorFlow>()
-        for (mkt in markets) {
-            val rows = client.fetchWindowByMarket(mkt, windowStart, windowEnd)
+        for (sym in kospiSymbols) {
+            val rows = client.fetchWindowByMarket(mkt, sym)
             batch += rows
         }
-        if (batch.isNotEmpty()) mapper.upsertAll(batch)
+
+        if (batch.isNotEmpty()) mapper.upsertInvestorFlows(batch)
     }
 
     private fun snapToHalfHour(t: LocalTime): LocalTime =

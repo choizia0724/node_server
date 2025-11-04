@@ -39,7 +39,7 @@ class StockSearchController(
         )
 
         val rows: List<StockTable> = if (total > 0)
-            stockMapper.searchStocks(
+            stockMapper.searchStocksPaging(
                 symbol = req.symbol,
                 name = req.name,
                 mrktctg = req.mrktctg,

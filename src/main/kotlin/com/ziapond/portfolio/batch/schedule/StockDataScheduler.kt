@@ -23,7 +23,7 @@ class StockDataScheduler(
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")
 
     /** 평일 09:30~15:30 매 30분 */
-    //@Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
     fun runHalfHourly() {
         val now = ZonedDateTime.now(KST)
         val today = now.toLocalDate()
@@ -36,15 +36,14 @@ class StockDataScheduler(
         val windowStart = windowEnd.minusMinutes(30)
 
         // 최근 기준일 기준 KOSPI 심볼 목록
-        val beginBasDt = today.minusDays(max(1, basdtOffsetDays))
-        val kospiSymbols = stockItemInfo.getStockItemName(beginBasDt)
-            .filter { it.mrktctg == "KOSPI" }
+
+        val kospiSymbols = stockItemInfo.getSymbolsFromDb(null,null, "KOSPI")
             .map { it.symbol }
             .distinct()
 
         val batch = mutableListOf<StockData>()
         for (sym in kospiSymbols) {
-            val ticks = minuteClient.fetchWindowTicks(sym, windowStart, windowEnd)
+            val ticks = minuteClient.fetchWindowTicks(sym,  windowEnd)
             val bar = StockDataAgg.to30m(sym, LocalDateTime.of(today, windowStart), ticks)
             if (bar != null) batch += bar
         }

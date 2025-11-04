@@ -4,25 +4,84 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ziapond.portfolio.common.mappers.InvestorFlowMapper">
-    <insert id="upsertAll" parameterType="java.util.List">
-        INSERT INTO stocks.investor_flow_30m(
-        ymd, bucket_start, market_code, investor_type_code, investor_type_name,
-        net_qty, net_amt, acml_net_qty, acml_net_amt
+    <insert id="upsertInvestorFlows">
+        INSERT INTO stocks.investor_flow (
+        symbol,
+        stck_bsop_date,
+        stck_clpr,
+        prdy_vrss,
+        prdy_vrss_sign,
+        prsn_ntby_qty,
+        frgn_ntby_qty,
+        orgn_ntby_qty,
+        prsn_ntby_tr_pbmn,
+        frgn_ntby_tr_pbmn,
+        orgn_ntby_tr_pbmn,
+        prsn_shnu_vol,
+        frgn_shnu_vol,
+        orgn_shnu_vol,
+        prsn_shnu_tr_pbmn,
+        frgn_shnu_tr_pbmn,
+        orgn_shnu_tr_pbmn,
+        prsn_seln_vol,
+        frgn_seln_vol,
+        orgn_seln_vol,
+        prsn_seln_tr_pbmn,
+        frgn_seln_tr_pbmn,
+        orgn_seln_tr_pbmn
         )
         VALUES
         <foreach collection="list" item="r" separator=",">
             (
-            #{r.ymd}, #{r.bucketStart}, #{r.marketCode}, #{r.investorTypeCode}, #{r.investorTypeName},
-            #{r.netQty}, #{r.netAmt}, #{r.acmlNetQty}, #{r.acmlNetAmt}
+            #{r.symbol},
+            #{r.stck_bsop_date},
+            #{r.stck_clpr},
+            #{r.prdy_vrss},
+            #{r.prdy_vrss_sign},
+            #{r.prsn_ntby_qty},
+            #{r.frgn_ntby_qty},
+            #{r.orgn_ntby_qty},
+            #{r.prsn_ntby_tr_pbmn},
+            #{r.frgn_ntby_tr_pbmn},
+            #{r.orgn_ntby_tr_pbmn},
+            #{r.prsn_shnu_vol},
+            #{r.frgn_shnu_vol},
+            #{r.orgn_shnu_vol},
+            #{r.prsn_shnu_tr_pbmn},
+            #{r.frgn_shnu_tr_pbmn},
+            #{r.orgn_shnu_tr_pbmn},
+            #{r.prsn_seln_vol},
+            #{r.frgn_seln_vol},
+            #{r.orgn_seln_vol},
+            #{r.prsn_seln_tr_pbmn},
+            #{r.frgn_seln_tr_pbmn},
+            #{r.orgn_seln_tr_pbmn}
             )
         </foreach>
-        ON CONFLICT (ymd, bucket_start, market_code, investor_type_code) DO UPDATE SET
-        investor_type_name = EXCLUDED.investor_type_name,
-        net_qty            = EXCLUDED.net_qty,
-        net_amt            = EXCLUDED.net_amt,
-        acml_net_qty       = EXCLUDED.acml_net_qty,
-        acml_net_amt       = EXCLUDED.acml_net_amt
+        ON CONFLICT (symbol, stck_bsop_date) DO UPDATE SET
+        stck_clpr          = EXCLUDED.stck_clpr,
+        prdy_vrss          = EXCLUDED.prdy_vrss,
+        prdy_vrss_sign     = EXCLUDED.prdy_vrss_sign,
+        prsn_ntby_qty      = EXCLUDED.prsn_ntby_qty,
+        frgn_ntby_qty      = EXCLUDED.frgn_ntby_qty,
+        orgn_ntby_qty      = EXCLUDED.orgn_ntby_qty,
+        prsn_ntby_tr_pbmn  = EXCLUDED.prsn_ntby_tr_pbmn,
+        frgn_ntby_tr_pbmn  = EXCLUDED.frgn_ntby_tr_pbmn,
+        orgn_ntby_tr_pbmn  = EXCLUDED.orgn_ntby_tr_pbmn,
+        prsn_shnu_vol      = EXCLUDED.prsn_shnu_vol,
+        frgn_shnu_vol      = EXCLUDED.frgn_shnu_vol,
+        orgn_shnu_vol      = EXCLUDED.orgn_shnu_vol,
+        prsn_shnu_tr_pbmn  = EXCLUDED.prsn_shnu_tr_pbmn,
+        frgn_shnu_tr_pbmn  = EXCLUDED.frgn_shnu_tr_pbmn,
+        orgn_shnu_tr_pbmn  = EXCLUDED.orgn_shnu_tr_pbmn,
+        prsn_seln_vol      = EXCLUDED.prsn_seln_vol,
+        frgn_seln_vol      = EXCLUDED.frgn_seln_vol,
+        orgn_seln_vol      = EXCLUDED.orgn_seln_vol,
+        prsn_seln_tr_pbmn  = EXCLUDED.prsn_seln_tr_pbmn,
+        frgn_seln_tr_pbmn  = EXCLUDED.frgn_seln_tr_pbmn,
+        orgn_seln_tr_pbmn  = EXCLUDED.orgn_seln_tr_pbmn
     </insert>
+
     <!-- 최신 날짜/시간 내림차순 + 페이징 -->
     <select id="searchMarketFlows" resultType="com.ziapond.portfolio.project.web.dto.InvestorFlowRow">
         SELECT

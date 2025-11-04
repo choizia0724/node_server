@@ -1,0 +1,12 @@
+@baseUrl = http://localhost:8080
+@token = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b2tlbiIsImF1ZCI6ImIzOGZkY2U0LTQyNTItNGUwMy1iMjQ1LTYwOThmOTZmN2RhYSIsInByZHRfY2QiOiIiLCJpc3MiOiJ1bm9ndyIsImV4cCI6MTc2MjM1NDg2MCwiaWF0IjoxNzYyMjY4NDYwLCJqdGkiOiJQU085bUlia3l1bUVlQXlSbjd4ZnR6bzJYaTVMNWw0ZFpBaUsifQ.3s0dUQjfeMJLrEqwuNustbkSDhKJwgyizh38Isk0OZ7uGVDwzC8eD6qe7-PGEWJygI8WLYQYHJNPimYZPQmjOA
+
+### POST
+POST {{baseUrl}}/api/stock-data/aggregate30m
+Content-Type: application/json
+
+{
+  "symbols": ["005930"],
+  "endTime": "10:30:00",
+  "lastData": "Y"
+}

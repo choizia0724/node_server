@@ -10,6 +10,8 @@ package com.ziapond.portfolio.batch.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.ziapond.portfolio.common.domain.InvestorFlow
+import com.ziapond.portfolio.common.mappers.InvestorFlowMapper
+import com.ziapond.portfolio.common.mappers.StockListMapper
 import com.ziapond.portfolio.kis.http.KisHttp
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -21,6 +23,7 @@ import java.time.format.DateTimeFormatter
 class InvestorFlowClient(
     private val http: KisHttp,
     @Value("\${kis.investor.tr-id}") private val trId: String,
+    private val investorFlowMapper: InvestorFlowMapper,
     @Value("\${kis.investor.path}") private val path: String,
 ) {
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")
@@ -32,112 +35,75 @@ class InvestorFlowClient(
      */
     fun fetchWindowByMarket(
         marketCode: String,
-        windowStart: LocalTime,
-        windowEnd: LocalTime
+        symbol: String
     ): List<InvestorFlow> {
-        val endStr = "%02d%02d%02d".format(windowEnd.hour, windowEnd.minute, 0)
 
         val node: JsonNode? = http.getJson(
             path = path,
             query = mapOf(
                 "FID_COND_MRKT_DIV_CODE" to marketCode,
-                "FID_INPUT_HOUR_1"       to endStr
+                "FID_INPUT_ISCD"       to symbol
             ),
             trId = trId,
         )
 
-        val arr = node?.path("output2")
+        val arr = node?.path("output")
             ?: node?.path("response")?.path("body")?.path("items")?.path("item")
 
         if (arr == null || arr.isMissingNode || arr.isNull) return emptyList()
 
-        val today = LocalDate.now(KST)
         val nodes = if (arr.isArray) arr.toList() else listOf(arr)
 
-        val grouped: Map<String, List<Tick>> = nodes.mapNotNull { n ->
-            // 시간(HHmmss)
-            val hhmmss = str(n, "stck_cntg_hour", "stck_bsop_time") ?: return@mapNotNull null
-            if (hhmmss.length < 6) return@mapNotNull null
-            val t = try {
-                LocalTime.of(hhmmss.substring(0,2).toInt(), hhmmss.substring(2,4).toInt(), hhmmss.substring(4,6).toInt())
-            } catch (_: Exception) { return@mapNotNull null }
-            if (t.isBefore(windowStart) || !t.isBefore(windowEnd)) return@mapNotNull null
+        val rows = nodes.mapNotNull { it.toInvestorFlow(symbol) }
+            .filter { it.stck_bsop_date.isNotBlank() }
 
-            val ymd = str(n, "stck_bsop_date", "bsop_date")
-                ?.let { LocalDate.parse(it, ymdBasic) } ?: today
-
-            val typeCode = str(n, "invt_tp_cd", "invest_tp_code", "ivst_tp_code") ?: return@mapNotNull null
-            val typeName = str(n, "invt_tp_nm", "invest_tp_name", "ivst_tp_name")
-
-            // 누적 순매수 수량/금액(필드명은 계정/문서에 따라 다를 수 있음)
-            val acmlQty = long(n, "acml_ntby_qty", "acml_net_buysell_qty")
-            val acmlAmt = bd(n, "acml_ntby_amt", "acml_net_buysell_amt")
-
-            Tick(
-                ymd = ymd, time = t,
-                investorTypeCode = typeCode, investorTypeName = typeName,
-                acmlNetQty = acmlQty, acmlNetAmt = acmlAmt
-            )
-        }.groupBy { it.investorTypeCode }
-
-        val bucketStart = OffsetDateTime.of(
-            LocalDateTime.of(today, windowStart),
-            KST.rules.getOffset(Instant.now())
-        )
-
-        // 유형별로 정렬 → first/last 차분 → 스냅샷
-        val result = mutableListOf<InvestorFlow>()
-        grouped.forEach { (typeCode, ticks) ->
-            val sorted = ticks.sortedBy { it.time }
-            val first = sorted.firstOrNull() ?: return@forEach
-            val last  = sorted.lastOrNull()  ?: return@forEach
-
-            val diffQty = safeDiff(last.acmlNetQty, first.acmlNetQty)
-            val diffAmt = safeDiff(last.acmlNetAmt, first.acmlNetAmt)
-
-            result += InvestorFlow(
-                ymd = last.ymd,
-                bucketStart = bucketStart,
-                marketCode = marketCode,
-                investorTypeCode = typeCode,
-                investorTypeName = last.investorTypeName,
-                netQty = diffQty,
-                netAmt = diffAmt,
-                acmlNetQty = last.acmlNetQty,
-                acmlNetAmt = last.acmlNetAmt
-            )
+        return rows
+    }
+    private fun JsonNode.textOf(vararg keys: String, default: String = ""): String {
+        for (k in keys) {
+            val v = this.path(k)
+            if (!v.isMissingNode && !v.isNull) return v.asText().trim()
         }
-        return result
+        return default
     }
 
-    // ---- internal helpers ----
-    private data class Tick(
-        val ymd: LocalDate,
-        val time: LocalTime,
-        val investorTypeCode: String,
-        val investorTypeName: String?,
-        val acmlNetQty: Long?,
-        val acmlNetAmt: BigDecimal?
-    )
+    private fun JsonNode.toInvestorFlow(symbol: String): InvestorFlow? {
+        // 필수키 체크: 영업일자 없으면 스킵
+        val date = textOf("stck_bsop_date", "basDt") // 일부 API는 basDt로 올 때가 있어 대비
+        if (date.isEmpty()) return null
 
-    private fun str(n: JsonNode, vararg keys: String): String? =
-        keys.firstNotNullOfOrNull { k ->
-            n.path(k).asText().takeIf { it.isNotBlank() }
-        }
+        return InvestorFlow(
+            symbol = symbol,
 
-    private fun long(n: JsonNode, vararg keys: String): Long? =
-        keys.firstNotNullOfOrNull { k ->
-            n.path(k).asText().takeIf { it.isNotBlank() }?.toLongOrNull()
-        }
+            stck_bsop_date     = date,
+            stck_clpr          = textOf("stck_clpr"),
+            prdy_vrss          = textOf("prdy_vrss"),
+            prdy_vrss_sign     = textOf("prdy_vrss_sign"),
 
-    private fun bd(n: JsonNode, vararg keys: String): BigDecimal? =
-        keys.firstNotNullOfOrNull { k ->
-            n.path(k).asText().takeIf { it.isNotBlank() }?.toBigDecimalOrNull()
-        }
+            prsn_ntby_qty      = textOf("prsn_ntby_qty"),
+            frgn_ntby_qty      = textOf("frgn_ntby_qty"),
+            orgn_ntby_qty      = textOf("orgn_ntby_qty"),
 
-    private fun safeDiff(a: Long?, b: Long?): Long? =
-        if (a != null && b != null) (a - b) else null
+            prsn_ntby_tr_pbmn  = textOf("prsn_ntby_tr_pbmn"),
+            frgn_ntby_tr_pbmn  = textOf("frgn_ntby_tr_pbmn"),
+            orgn_ntby_tr_pbmn  = textOf("orgn_ntby_tr_pbmn"),
 
-    private fun safeDiff(a: BigDecimal?, b: BigDecimal?): BigDecimal? =
-        if (a != null && b != null) a.subtract(b) else null
+            prsn_shnu_vol      = textOf("prsn_shnu_vol"),
+            frgn_shnu_vol      = textOf("frgn_shnu_vol"),
+            orgn_shnu_vol      = textOf("orgn_shnu_vol"),
+
+            prsn_shnu_tr_pbmn  = textOf("prsn_shnu_tr_pbmn"),
+            frgn_shnu_tr_pbmn  = textOf("frgn_shnu_tr_pbmn"),
+            orgn_shnu_tr_pbmn  = textOf("orgn_shnu_tr_pbmn"),
+
+            prsn_seln_vol      = textOf("prsn_seln_vol"),
+            frgn_seln_vol      = textOf("frgn_seln_vol"),
+            orgn_seln_vol      = textOf("orgn_seln_vol"),
+
+            prsn_seln_tr_pbmn  = textOf("prsn_seln_tr_pbmn"),
+            frgn_seln_tr_pbmn  = textOf("frgn_seln_tr_pbmn"),
+            orgn_seln_tr_pbmn  = textOf("orgn_seln_tr_pbmn")
+        )
+    }
+
 }

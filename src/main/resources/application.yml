@@ -44,12 +44,15 @@ kis:
   investor:
     path: /uapi/domestic-stock/v1/quotations/inquire-investor-time-by-market
     tr-id: FHPTJ04030000
-  minute-value:
+  minute-value:           # 주식당일분봉조회
     path: /uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice
     tr-id: FHKST03010200
-  daily-minute-value:
+  daily-minute-value:     # 주식일별분봉조회
     path: /uapi/domestic-stock/v1/quotations/inquire-time-dailychartprice
     tr-id: FHKST03010230
+  daily-value:            # 국내주식기간별시세
+    pah: /uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice
+    tr-id: FHKST03010100
   oauth:
     rest-token-path: /oauth2/tokenP
     ws-token-path: /oauth2/Approval

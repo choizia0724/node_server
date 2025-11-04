@@ -10,6 +10,7 @@ import com.ziapond.portfolio.batch.web.dto.Aggregate30mRequest
 import com.ziapond.portfolio.batch.web.dto.Aggregate30mResponse
 import com.ziapond.portfolio.batch.web.dto.SyncDailyMinuteRequest
 import com.ziapond.portfolio.batch.web.dto.SyncDailyMinuteResponse
+import com.ziapond.portfolio.common.domain.StockTable
 import com.ziapond.portfolio.common.mappers.StockDataMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.time.*
-import kotlin.math.max
+import java.time.format.DateTimeFormatter
 
 
 
@@ -45,24 +46,19 @@ class StockDataBatchController(
             )
         }
 
-        val windowEnd: LocalTime = req.endTime?.let {
-            LocalTime.parse(it) // "HH:mm"
-        } ?: snapToHalfHour(now.toLocalTime())
+        val windowEnd: LocalTime =
+            req.endTime?.let { LocalTime.parse(it) }
+                ?: snapToHalfHour(now.toLocalTime())
 
         val windowStart = windowEnd.minusMinutes(30)
 
-        val symbols: List<String> = req.symbols?.takeIf { it.isNotEmpty() } ?: run {
-            val beginBasDt = today.minusDays(max(1, 7L))
-            stockItemInfo.getStockItemName(beginBasDt)
-                .filter { it.mrktctg == marketsCsv }
-                .map { it.symbol }
-                .distinct()
-        }
+        val symbols: List<StockTable> =
+            stockItemInfo.getSymbolsFromDb(req.symbols,"",marketsCsv)
 
         val batch = mutableListOf<StockData>()
         for (sym in symbols) {
-            val ticks = minuteClient.fetchWindowTicks(sym, windowStart, windowEnd)
-            val bar = StockDataAgg.to30m(sym, LocalDateTime.of(today, windowStart), ticks)
+            val ticks = minuteClient.fetchWindowTicks(sym.symbol, windowEnd)
+            val bar = StockDataAgg.to30m(sym.symbol, LocalDateTime.of(today, windowStart), ticks)
             if (bar != null) batch += bar
         }
         if (batch.isNotEmpty()) stockDataMapper.upsertAll(batch)

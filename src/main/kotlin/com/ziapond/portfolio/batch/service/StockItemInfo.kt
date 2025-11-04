@@ -3,6 +3,7 @@ package com.ziapond.portfolio.batch.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.ziapond.portfolio.common.domain.StockTable
 import com.ziapond.portfolio.common.mappers.StockListMapper
+import org.apache.ibatis.annotations.Param
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
@@ -51,10 +52,20 @@ class StockItemInfo(
         }
     }
 
+
+    /** [스케줄러용] DB upsert */
     fun fetchAndUpsert(beginBasDt: LocalDate, numOfRows: Int = 3000) {
         val rows = getStockItemName(beginBasDt, numOfRows)
         if (rows.isNotEmpty()) stockMapper.upsertStocks(rows)
     }
+
+    /** [요청 처리용] DB에서 심볼 조회 */
+    fun getSymbolsFromDb(
+        symbol: List<String>?,
+        name: String?,
+        mrktctg: String?,
+    ): List<StockTable> =
+        stockMapper.searchStocks(symbol, name, mrktctg)
 
     private fun JsonNode.toStockTable(): StockTable =
         StockTable(

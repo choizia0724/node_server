@@ -17,7 +17,7 @@
         SELECT id, token_type, date_key, access_token, issued_at, expires_at, meta
         FROM stocks.kis_token
         WHERE token_type = #{tokenType}
-          AND date_key   = #{dateKey}
+          ORDER BY id desc
             LIMIT 1
     </select>
 

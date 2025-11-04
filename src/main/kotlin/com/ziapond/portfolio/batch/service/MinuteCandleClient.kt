@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.*
+import java.time.format.DateTimeFormatter
 
 @Service
 class MinuteCandleClient(
@@ -26,16 +27,20 @@ class MinuteCandleClient(
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")
 
     /** 당일 기준, [windowStart, windowEnd) 범위의 1분틱 수집 */
-    fun fetchWindowTicks(symbol6: String, windowStart: LocalTime, windowEnd: LocalTime): List<MinuteTick> {
+    fun fetchWindowTicks(symbol6: String, windowEnd: LocalTime): List<MinuteTick> {
         // KIS 당일 분봉 엔드포인트: 끝시각 기준으로 30분치 제공되는 패턴
-        val endStr = "%02d%02d%02d".format(windowEnd.hour, windowEnd.minute, 0)
+        val endStr: String = windowEnd.format(DateTimeFormatter.ofPattern("HHmmss"))
+        val last6 = symbol6.takeLast(6)
+
 
         val node: JsonNode? = http.getJson(
             path = path,
             query = mapOf(
                 "FID_COND_MRKT_DIV_CODE" to "J",
-                "FID_INPUT_ISCD" to symbol6,
-                "FID_INPUT_HOUR_1" to endStr
+                "FID_ETC_CLS_CODE" to "J",
+                "FID_INPUT_ISCD" to last6,
+                "FID_INPUT_HOUR_1" to endStr,
+                "FID_PW_DATA_INCU_YN" to "Y"
             ),
             trId = trId,
         )
@@ -94,7 +99,7 @@ class MinuteCandleClient(
             )
         }.filter { tick ->
             val t = tick.tsKst.toLocalTime()
-            !t.isBefore(windowStart) && t.isBefore(windowEnd)
+            t.isBefore(windowEnd)
         }
     }
 }

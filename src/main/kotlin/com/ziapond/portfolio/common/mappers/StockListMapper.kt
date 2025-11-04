@@ -20,11 +20,17 @@ interface StockListMapper {
     fun findBySymbolAndRange(symbol: String, from: LocalDate, to: LocalDate): List<StockTable>
 
     fun searchStocks(
+        @Param("symbol") symbol: List<String>?,
+        @Param("name") name: String?,
+        @Param("mrktctg") mrktctg: String?
+    ): List<StockTable>
+
+    fun searchStocksPaging(
         @Param("symbol") symbol: String?,
         @Param("name") name: String?,
         @Param("mrktctg") mrktctg: String?,
         @Param("limit") limit: Int?,
-        @Param("offset") offset: Int?
+        @Param("offset") offset: Int?,
     ): List<StockTable>
 
     fun countStocks(

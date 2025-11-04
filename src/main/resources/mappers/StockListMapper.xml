@@ -7,8 +7,12 @@
     <!-- 공통 WHERE 절 -->
     <sql id="stockWhere">
         <where>
-            <if test="symbol != null and symbol != ''">
-                AND symbol = #{symbol}
+            <if test="symbol != null and symbol.size > 0">
+                AND (
+                <foreach collection="symbol" item="sym" separator=" OR ">
+                     symbol LIKE '%' || #{sym}
+                </foreach>
+                )
             </if>
             <if test="name != null and name != ''">
                 AND name ILIKE CONCAT('%', #{name}, '%')
@@ -60,12 +64,22 @@
     <!-- 목록 조회 (페이징) -->
     <select id="searchStocks" resultType="com.ziapond.portfolio.common.domain.StockTable">
         SELECT symbol, name, basdt, isincd, mrktctg, crno, corpnm
+        FROM stocks.stock_table
+        <include refid="stockWhere"/>
+        ORDER BY basdt DESC
+    </select>
+
+    <!-- 목록 조회 (페이징) -->
+    <select id="searchStocksPaging" resultType="com.ziapond.portfolio.common.domain.StockTable">
+        SELECT symbol, name, basdt, isincd, mrktctg, crno, corpnm
             FROM stocks.stock_table
         <include refid="stockWhere"/>
             ORDER BY basdt DESC
             LIMIT #{limit}
             OFFSET #{offset}
     </select>
+
+
 
     <!-- 총 개수 -->
     <select id="countStocks" resultType="long">

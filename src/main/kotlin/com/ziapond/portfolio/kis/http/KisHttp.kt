@@ -51,12 +51,12 @@ class KisHttp(
                 h.set("appkey", appKey)
                 h.set("appsecret", appSecret)
                 h.set("custtype", custType)
-                h.set("Content-Type", "application/json; charset=utf-8")
+                h.set("content-type", "application/json; charset=utf-8")
 
                 if (auth) {
                     val token = tokenProvider.getRestToken()
                     require(!token.isNullOrBlank()) { "KIS access token is blank" }
-                    h.set("Authorization","Bearer ${token}")
+                    h.set("authorization","Bearer ${token}")
                 }
 
                 trId?.takeIf { it.isNotBlank() }?.let { h.set("tr_id", it) }

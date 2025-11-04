@@ -14,13 +14,34 @@ import java.time.OffsetDateTime
 
 
 data class InvestorFlow(
-    val ymd: LocalDate,
-    val bucketStart: OffsetDateTime,
-    val marketCode: String,          // ex) "KOSPI", "KOSDAQ"
-    val investorTypeCode: String,    // KIS investor type code
-    val investorTypeName: String?,   // optional
-    val netQty: Long?,               // 30분 구간 순매수 수량 (diff)
-    val netAmt: BigDecimal?,         // 30분 구간 순매수 금액 (diff)
-    val acmlNetQty: Long?,           // 종료 시점 누적 수량
-    val acmlNetAmt: BigDecimal?      // 종료 시점 누적 금액
+    val symbol: String,
+
+    val stck_bsop_date: String,
+    val stck_clpr: String,
+    val prdy_vrss: String,
+    val prdy_vrss_sign: String,
+
+    val prsn_ntby_qty: String,
+    val frgn_ntby_qty: String,
+    val orgn_ntby_qty: String,
+
+    val prsn_ntby_tr_pbmn: String,
+    val frgn_ntby_tr_pbmn: String,
+    val orgn_ntby_tr_pbmn: String,
+
+    val prsn_shnu_vol: String,
+    val frgn_shnu_vol: String,
+    val orgn_shnu_vol: String,
+
+    val prsn_shnu_tr_pbmn: String,
+    val frgn_shnu_tr_pbmn: String,
+    val orgn_shnu_tr_pbmn: String,
+
+    val prsn_seln_vol: String,
+    val frgn_seln_vol: String,
+    val orgn_seln_vol: String,
+
+    val prsn_seln_tr_pbmn: String,
+    val frgn_seln_tr_pbmn: String,
+    val orgn_seln_tr_pbmn: String
 )
