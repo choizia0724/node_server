@@ -22,7 +22,8 @@ interface StockListMapper {
     fun searchStocks(
         @Param("symbol") symbol: List<String>?,
         @Param("name") name: String?,
-        @Param("mrktctg") mrktctg: String?
+        @Param("mrktctg") mrktctg: String?,
+        @Param("useOrNot") useOrNot: Boolean?,
     ): List<StockTable>
 
     fun searchStocksPaging(

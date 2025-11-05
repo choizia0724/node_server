@@ -53,7 +53,7 @@ class StockDataBatchController(
         val windowStart = windowEnd.minusMinutes(30)
 
         val symbols: List<StockTable> =
-            stockItemInfo.getSymbolsFromDb(req.symbols,"",marketsCsv)
+            stockItemInfo.getSymbolsFromDb(req.symbols,null,null,true)
 
         val batch = mutableListOf<StockData>()
         for (sym in symbols) {

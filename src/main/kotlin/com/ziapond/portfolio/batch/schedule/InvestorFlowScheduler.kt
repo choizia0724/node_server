@@ -38,7 +38,7 @@ class InvestorFlowScheduler(
         val today = now.toLocalDate()
         if (!calendar.isTradingDay(today)) return
 
-        val kospiSymbols = stockItemInfo.getSymbolsFromDb(null,null, "KOSPI")
+        val kospiSymbols = stockItemInfo.getSymbolsFromDb(null,null, null, true)
             .map { it.symbol }
             .distinct()
 
@@ -48,9 +48,10 @@ class InvestorFlowScheduler(
         for (sym in kospiSymbols) {
             val rows = client.fetchWindowByMarket(mkt, sym)
             batch += rows
+            if (rows.isNotEmpty()) mapper.upsertInvestorFlows(rows)
         }
 
-        if (batch.isNotEmpty()) mapper.upsertInvestorFlows(batch)
+
     }
 
     private fun snapToHalfHour(t: LocalTime): LocalTime =

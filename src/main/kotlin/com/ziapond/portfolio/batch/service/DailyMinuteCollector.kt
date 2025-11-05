@@ -37,7 +37,7 @@ class DailyMinuteCollector(
         if (!calendar.isTradingDay(ymd)) return emptyList()
 
         val syms: List<String> = symbols?.takeIf { it.isNotEmpty() } ?: run {
-            stockListMapper.searchStocks(null, null, markets)
+            stockListMapper.searchStocks(null, null, markets,true)
                 .map { it.symbol }
                 .distinct()
         }

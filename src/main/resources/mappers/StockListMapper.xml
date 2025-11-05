@@ -20,6 +20,9 @@
             <if test="mrktctg != null and mrktctg != ''">
                 AND mrktctg = #{mrktctg}
             </if>
+            <if test="useOrNot !=null and useOrNot != ''">
+                AND useornot = #{useOrNot}
+            </if>
         </where>
     </sql>
     <!-- 단건 업서트 -->
@@ -63,7 +66,7 @@
 
     <!-- 목록 조회 (페이징) -->
     <select id="searchStocks" resultType="com.ziapond.portfolio.common.domain.StockTable">
-        SELECT symbol, name, basdt, isincd, mrktctg, crno, corpnm
+        SELECT symbol, name, basdt, isincd, mrktctg, crno, corpnm, useornot
         FROM stocks.stock_table
         <include refid="stockWhere"/>
         ORDER BY basdt DESC

@@ -34,14 +34,14 @@ class InvestorFlowClient(
      * [windowStart, windowEnd) 범위 내 데이터로 30분 버킷 스냅샷을 만든다.
      */
     fun fetchWindowByMarket(
-        marketCode: String,
+        divCode: String,
         symbol: String
     ): List<InvestorFlow> {
 
         val node: JsonNode? = http.getJson(
             path = path,
             query = mapOf(
-                "FID_COND_MRKT_DIV_CODE" to marketCode,
+                "FID_COND_MRKT_DIV_CODE" to divCode,
                 "FID_INPUT_ISCD"       to symbol
             ),
             trId = trId,

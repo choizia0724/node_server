@@ -37,7 +37,7 @@ class StockDataScheduler(
 
         // 최근 기준일 기준 KOSPI 심볼 목록
 
-        val kospiSymbols = stockItemInfo.getSymbolsFromDb(null,null, "KOSPI")
+        val kospiSymbols = stockItemInfo.getSymbolsFromDb(null,null, null, true)
             .map { it.symbol }
             .distinct()
 

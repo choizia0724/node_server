@@ -42,8 +42,8 @@ kis:
     base-delay-ms: 250
     max-delay-ms: 3000
   investor:
-    path: /uapi/domestic-stock/v1/quotations/inquire-investor-time-by-market
-    tr-id: FHPTJ04030000
+    path: /uapi/domestic-stock/v1/quotations/inquire-investor
+    tr-id: FHKST01010900
   minute-value:           # 주식당일분봉조회
     path: /uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice
     tr-id: FHKST03010200

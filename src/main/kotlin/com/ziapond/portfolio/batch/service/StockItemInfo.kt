@@ -64,8 +64,9 @@ class StockItemInfo(
         symbol: List<String>?,
         name: String?,
         mrktctg: String?,
+        useornot: Boolean
     ): List<StockTable> =
-        stockMapper.searchStocks(symbol, name, mrktctg)
+        stockMapper.searchStocks(symbol, name, mrktctg, useornot)
 
     private fun JsonNode.toStockTable(): StockTable =
         StockTable(
@@ -75,6 +76,7 @@ class StockItemInfo(
             isincd  = this.path("isinCd").asText(null),
             mrktctg = this.path("mrktCtg").asText(null),
             crno    = this.path("crno").asText(null),
-            corpnm  = this.path("corpNm").asText(null)
+            corpnm  = this.path("corpNm").asText(null),
+            useOrNot = this.path("useOrNot").asBoolean(),
         )
 }
