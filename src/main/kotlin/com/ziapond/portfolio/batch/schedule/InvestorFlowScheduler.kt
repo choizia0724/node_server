@@ -4,9 +4,7 @@ import com.ziapond.portfolio.calendar.TradingCalendar
 import com.ziapond.portfolio.common.domain.InvestorFlow
 import com.ziapond.portfolio.common.mappers.InvestorFlowMapper
 import com.ziapond.portfolio.batch.service.InvestorFlowClient
-import com.ziapond.portfolio.batch.service.StockDataAgg
 import com.ziapond.portfolio.batch.service.StockItemInfo
-import com.ziapond.portfolio.common.domain.StockData
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component

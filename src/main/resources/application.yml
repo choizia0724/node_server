@@ -51,8 +51,11 @@ kis:
     path: /uapi/domestic-stock/v1/quotations/inquire-time-dailychartprice
     tr-id: FHKST03010230
   daily-value:            # 국내주식기간별시세
-    pah: /uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice
+    path: /uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice
     tr-id: FHKST03010100
+  search-stock-info:      # 주식기본조회
+    path: /uapi/domestic-stock/v1/quotations/search-stock-info
+    tr-id: CTPF1002R
   oauth:
     rest-token-path: /oauth2/tokenP
     ws-token-path: /oauth2/Approval

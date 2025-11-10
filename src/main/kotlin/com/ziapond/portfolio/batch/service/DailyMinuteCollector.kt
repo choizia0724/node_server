@@ -1,7 +1,7 @@
 package com.ziapond.portfolio.batch.service
 
 import com.ziapond.portfolio.calendar.TradingCalendar
-import com.ziapond.portfolio.common.domain.StockData
+import com.ziapond.portfolio.common.domain.StockDataResponse
 import com.ziapond.portfolio.common.mappers.StockDataMapper
 import com.ziapond.portfolio.common.mappers.StockListMapper
 import org.springframework.beans.factory.annotation.Value
@@ -43,7 +43,7 @@ class DailyMinuteCollector(
         }
         println(syms.joinToString(", "))
 
-        val batch = ArrayList<StockData>(4096)
+        val batch = ArrayList<StockDataResponse>(4096)
         fun flush() {
             if (batch.isNotEmpty()) {
                 mapper.upsertAll(batch)

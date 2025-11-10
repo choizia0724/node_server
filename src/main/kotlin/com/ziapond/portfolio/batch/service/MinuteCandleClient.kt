@@ -16,7 +16,7 @@ class MinuteCandleClient(
     @Value("\${kis.minute-value.path}") private val path: String,
 ) {
     data class MinuteTick(
-        val tsKst: OffsetDateTime,
+        val tsKst: LocalDateTime,
         val open: BigDecimal,
         val high: BigDecimal,
         val low: BigDecimal,
@@ -74,7 +74,7 @@ class MinuteCandleClient(
                 return@mapNotNull null
             }
 
-            val ts: OffsetDateTime = ZonedDateTime.of(today, time, KST).toOffsetDateTime()
+            val ts: LocalDateTime = ZonedDateTime.of(today, time, KST).toLocalDateTime()
 
             // 숫자 필드 파서 (로컬 함수는 값만 반환)
             fun bd(name: String): BigDecimal? =

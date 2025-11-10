@@ -1,16 +1,14 @@
 package com.ziapond.portfolio.batch.schedule
 
 import com.ziapond.portfolio.calendar.TradingCalendar
-import com.ziapond.portfolio.common.domain.StockData
-import com.ziapond.portfolio.batch.service.StockDataAgg
 import com.ziapond.portfolio.batch.service.MinuteCandleClient
 import com.ziapond.portfolio.batch.service.StockItemInfo
+import com.ziapond.portfolio.common.domain.StockDataResponse
 import com.ziapond.portfolio.common.mappers.StockDataMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.*
-import kotlin.math.max
 
 @Component
 class StockDataScheduler(
@@ -24,31 +22,75 @@ class StockDataScheduler(
 
     /** 평일 09:30~15:30 매 30분 */
     @Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
-    fun runHalfHourly() {
+    fun runKOSPIHalfHourly() {
         val now = ZonedDateTime.now(KST)
         val today = now.toLocalDate()
-        if (!calendar.isTradingDay(today)) {
-            // 휴장일 → skip
-            return
-        }
+        if (!calendar.isTradingDay(today)) return
 
-        val windowEnd = snapToHalfHour(now.toLocalTime())   // 09:30, 10:00, ...
-        val windowStart = windowEnd.minusMinutes(30)
+        val windowEnd: LocalTime = snapToHalfHour(now.toLocalTime()) // 09:30, 10:00, ...
+        val windowStart: LocalTime = windowEnd.minusMinutes(30)
 
         // 최근 기준일 기준 KOSPI 심볼 목록
-
-        val kospiSymbols = stockItemInfo.getSymbolsFromDb(null,null, null, true)
+        val kospiSymbols = stockItemInfo.getSymbolsFromDb(null, null, "KOSPI", true)
             .map { it.symbol }
             .distinct()
 
-        val batch = mutableListOf<StockData>()
+        val batch = mutableListOf<StockDataResponse>()
         for (sym in kospiSymbols) {
-            val ticks = minuteClient.fetchWindowTicks(sym,  windowEnd)
-            val bar = StockDataAgg.to30m(sym, LocalDateTime.of(today, windowStart), ticks)
-            if (bar != null) batch += bar
+            val ticks = minuteClient.fetchWindowTicks(sym, windowEnd)
+            val bar = StockDataResponse(sym, ticks)
+            batch += bar
         }
         if (batch.isNotEmpty()) stockDataMapper.upsertAll(batch)
     }
+
+    /** 평일 09:30~15:30 매 30분 */
+    @Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
+    fun runKOSDAQHalfHourly() {
+        val now = ZonedDateTime.now(KST)
+        val today = now.toLocalDate()
+        if (!calendar.isTradingDay(today)) return
+
+        val windowEnd: LocalTime = snapToHalfHour(now.toLocalTime())
+        val windowStart: LocalTime = windowEnd.minusMinutes(30)
+
+        // 최근 기준일 기준 KOSDAQ 심볼 목록
+        val kosdaqSymbols = stockItemInfo.getSymbolsFromDb(null, null, "KOSDAQ", true)
+            .map { it.symbol }
+            .distinct()
+
+        val batch = mutableListOf<StockDataResponse>()
+        for (sym in kosdaqSymbols) {
+            val ticks = minuteClient.fetchWindowTicks(sym, windowEnd)
+            val bar = StockDataResponse(sym, ticks)
+            batch += bar
+        }
+        if (batch.isNotEmpty()) stockDataMapper.upsertAll(batch)
+    }
+    /** 평일 09:30~15:30 매 30분 */
+    @Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
+    fun runKODEXHalfHourly() {
+        val now = ZonedDateTime.now(KST)
+        val today = now.toLocalDate()
+        if (!calendar.isTradingDay(today)) return
+
+        val windowEnd: LocalTime = snapToHalfHour(now.toLocalTime())
+        val windowStart: LocalTime = windowEnd.minusMinutes(30)
+
+        // 최근 기준일 기준 KOSDAQ 심볼 목록
+        val kosdaqSymbols = stockItemInfo.getSymbolsFromDb(null, null, "삼성자산운용", true)
+            .map { it.symbol }
+            .distinct()
+
+        val batch = mutableListOf<StockDataResponse>()
+        for (sym in kosdaqSymbols) {
+            val ticks = minuteClient.fetchWindowTicks(sym, windowEnd)
+            val bar = StockDataResponse(sym, ticks)
+            batch += bar
+        }
+        if (batch.isNotEmpty()) stockDataMapper.upsertAll(batch)
+    }
+
 
     private fun snapToHalfHour(t: LocalTime): LocalTime =
         if (t.minute < 30) t.withMinute(30).withSecond(0)

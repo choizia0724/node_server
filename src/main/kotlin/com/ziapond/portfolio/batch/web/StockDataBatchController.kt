@@ -2,14 +2,13 @@ package com.ziapond.portfolio.batch.web
 
 import com.ziapond.portfolio.batch.service.DailyMinuteCollector
 import com.ziapond.portfolio.calendar.TradingCalendar
-import com.ziapond.portfolio.common.domain.StockData
 import com.ziapond.portfolio.batch.service.MinuteCandleClient
-import com.ziapond.portfolio.batch.service.StockDataAgg
 import com.ziapond.portfolio.batch.service.StockItemInfo
 import com.ziapond.portfolio.batch.web.dto.Aggregate30mRequest
 import com.ziapond.portfolio.batch.web.dto.Aggregate30mResponse
 import com.ziapond.portfolio.batch.web.dto.SyncDailyMinuteRequest
 import com.ziapond.portfolio.batch.web.dto.SyncDailyMinuteResponse
+import com.ziapond.portfolio.common.domain.StockDataResponse
 import com.ziapond.portfolio.common.domain.StockTable
 import com.ziapond.portfolio.common.mappers.StockDataMapper
 import org.springframework.beans.factory.annotation.Value
@@ -20,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.time.*
-import java.time.format.DateTimeFormatter
-
 
 
 @RestController
@@ -36,8 +33,8 @@ class StockDataBatchController(
 ) {
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")
 
-    @PostMapping("/aggregate30m")
-    fun aggregate(@RequestBody req: Aggregate30mRequest): ResponseEntity<Aggregate30mResponse> {
+    @PostMapping("/aggregate30m/kospi")
+    fun aggregateKOSPI(@RequestBody req: Aggregate30mRequest): ResponseEntity<Aggregate30mResponse> {
         val now = ZonedDateTime.now(KST)
         val today = now.toLocalDate()
         if (!calendar.isTradingDay(today)) {
@@ -53,13 +50,13 @@ class StockDataBatchController(
         val windowStart = windowEnd.minusMinutes(30)
 
         val symbols: List<StockTable> =
-            stockItemInfo.getSymbolsFromDb(req.symbols,null,null,true)
+            stockItemInfo.getSymbolsFromDb(req.symbols,null,"KOSPI",true)
 
-        val batch = mutableListOf<StockData>()
+        val batch = mutableListOf<StockDataResponse>()
         for (sym in symbols) {
             val ticks = minuteClient.fetchWindowTicks(sym.symbol, windowEnd)
-            val bar = StockDataAgg.to30m(sym.symbol, LocalDateTime.of(today, windowStart), ticks)
-            if (bar != null) batch += bar
+            val bar = StockDataResponse(sym.symbol, ticks)
+            batch += bar
         }
         if (batch.isNotEmpty()) stockDataMapper.upsertAll(batch)
 
@@ -72,6 +69,82 @@ class StockDataBatchController(
             )
         )
     }
+
+    @PostMapping("/aggregate30m/kosdaq")
+    fun aggregateKOSDAQ(@RequestBody req: Aggregate30mRequest): ResponseEntity<Aggregate30mResponse> {
+        val now = ZonedDateTime.now(KST)
+        val today = now.toLocalDate()
+        if (!calendar.isTradingDay(today)) {
+            return ResponseEntity.ok(
+                Aggregate30mResponse(skipped = true, reason = "Holiday or weekend")
+            )
+        }
+
+        val windowEnd: LocalTime =
+            req.endTime?.let { LocalTime.parse(it) }
+                ?: snapToHalfHour(now.toLocalTime())
+
+        val windowStart = windowEnd.minusMinutes(30)
+
+        val symbols: List<StockTable> =
+            stockItemInfo.getSymbolsFromDb(req.symbols,null,"KOSDAQ",true)
+
+        val batch = mutableListOf<StockDataResponse>()
+        for (sym in symbols) {
+            val ticks = minuteClient.fetchWindowTicks(sym.symbol, windowEnd)
+            val bar = StockDataResponse(sym.symbol, ticks)
+            batch += bar
+        }
+        if (batch.isNotEmpty()) stockDataMapper.upsertAll(batch)
+
+        return ResponseEntity.ok(
+            Aggregate30mResponse(
+                skipped = false,
+                windowStart = windowStart.toString(),
+                windowEnd = windowEnd.toString(),
+                aggregated = batch.size
+            )
+        )
+    }
+
+
+    @PostMapping("/aggregate30m/kodex")
+    fun aggregateKODEX(@RequestBody req: Aggregate30mRequest): ResponseEntity<Aggregate30mResponse> {
+        val now = ZonedDateTime.now(KST)
+        val today = now.toLocalDate()
+        if (!calendar.isTradingDay(today)) {
+            return ResponseEntity.ok(
+                Aggregate30mResponse(skipped = true, reason = "Holiday or weekend")
+            )
+        }
+
+        val windowEnd: LocalTime =
+            req.endTime?.let { LocalTime.parse(it) }
+                ?: snapToHalfHour(now.toLocalTime())
+
+        val windowStart = windowEnd.minusMinutes(30)
+
+        val symbols: List<StockTable> =
+            stockItemInfo.getSymbolsFromDb(req.symbols,null,"삼성자산운용",true)
+
+        val batch = mutableListOf<StockDataResponse>()
+        for (sym in symbols) {
+            val ticks = minuteClient.fetchWindowTicks(sym.symbol, windowEnd)
+            val bar = StockDataResponse(sym.symbol, ticks)
+            batch += bar
+        }
+        if (batch.isNotEmpty()) stockDataMapper.upsertAll(batch)
+
+        return ResponseEntity.ok(
+            Aggregate30mResponse(
+                skipped = false,
+                windowStart = windowStart.toString(),
+                windowEnd = windowEnd.toString(),
+                aggregated = batch.size
+            )
+        )
+    }
+
     @PostMapping("/aggregateDaily120m")
     fun sync(@RequestBody req: SyncDailyMinuteRequest): ResponseEntity<SyncDailyMinuteResponse> {
         val time = req.time
