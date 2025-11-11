@@ -31,6 +31,8 @@ data class StockSearchRequest(
     val page: Int = 1,
 
     @field:Min(1) @field:Max(5000)
-    val limit: Int = 20
+    val limit: Int = 20,
+
+    val useOrNot: Boolean? = null
 )
 
