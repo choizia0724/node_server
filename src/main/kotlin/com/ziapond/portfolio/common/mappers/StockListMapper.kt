@@ -32,6 +32,7 @@ interface StockListMapper {
         @Param("mrktctg") mrktctg: String?,
         @Param("limit") limit: Int?,
         @Param("offset") offset: Int?,
+        @Param("useOrNot") useOrNot: Boolean?,
     ): List<StockTable>
 
     fun countStocks(

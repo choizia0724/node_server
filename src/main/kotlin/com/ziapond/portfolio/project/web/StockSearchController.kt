@@ -44,7 +44,8 @@ class StockSearchController(
                 name = req.name,
                 mrktctg = req.mrktctg,
                 limit = limit,
-                offset = offset
+                offset = offset,
+                useOrNot = true,
             )
         else emptyList()
 
