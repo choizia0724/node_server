@@ -34,7 +34,7 @@
         <if test="req.from != null"> AND bucket_start <![CDATA[>=]]> #{req.from} </if>
         <if test="req.to != null">   AND bucket_start <![CDATA[<]]>  #{req.to} </if>
             ORDER BY bucket_start
-        <if test="req.limit != null"> LIMIT #{req.limit} </if>
+        <if test="req.limit != null req.limit != ''"> LIMIT #{req.limit} </if>
     </select>
 
 </mapper>
