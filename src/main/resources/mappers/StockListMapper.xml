@@ -7,12 +7,8 @@
     <!-- 공통 WHERE 절 -->
     <sql id="stockWhere">
         <where>
-            <if test="symbol != null and symbol.size > 0">
-                AND (
-                <foreach collection="symbol" item="sym" separator=" OR ">
-                     symbol LIKE '%' || #{sym}
-                </foreach>
-                )
+            <if test="symbol != null and symbol != ''">
+                AND symbol = #{symbol}
             </if>
             <if test="name != null and name != ''">
                 AND name ILIKE CONCAT('%', #{name}, '%')
