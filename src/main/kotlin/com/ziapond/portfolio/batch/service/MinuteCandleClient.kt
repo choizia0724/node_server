@@ -2,6 +2,7 @@
 package com.ziapond.portfolio.batch.service
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.ziapond.portfolio.common.domain.StockDataResponse
 import com.ziapond.portfolio.kis.http.KisHttp
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -15,19 +16,11 @@ class MinuteCandleClient(
     @Value("\${kis.minute-value.tr-id}") private val trId: String,
     @Value("\${kis.minute-value.path}") private val path: String,
 ) {
-    data class MinuteTick(
-        val tsKst: LocalDateTime,
-        val open: BigDecimal,
-        val high: BigDecimal,
-        val low: BigDecimal,
-        val close: BigDecimal,
-        val volume: Long
-    )
 
     private val KST: ZoneId = ZoneId.of("Asia/Seoul")
 
     /** 당일 기준, [windowStart, windowEnd) 범위의 1분틱 수집 */
-    fun fetchWindowTicks(symbol6: String, windowEnd: LocalTime): List<MinuteTick> {
+    fun fetchWindowTicks(symbol6: String, windowEnd: LocalDateTime): List<StockDataResponse.MinuteTick> {
         // KIS 당일 분봉 엔드포인트: 끝시각 기준으로 30분치 제공되는 패턴
         val endStr: String = windowEnd.format(DateTimeFormatter.ofPattern("HHmmss"))
         val last6 = symbol6.takeLast(6)
@@ -89,7 +82,7 @@ class MinuteCandleClient(
             // 분 체결량(없으면 0)
             val volume = n.path("cntg_vol").asLong(-1).let { if (it >= 0) it else 0L }
 
-            MinuteTick(
+            StockDataResponse.MinuteTick(
                 tsKst = ts,
                 open = open,
                 high = high,
@@ -98,8 +91,8 @@ class MinuteCandleClient(
                 volume = volume
             )
         }.filter { tick ->
-            val t = tick.tsKst.toLocalTime()
-            t.isBefore(windowEnd)
+            val t = tick.tsKst
+            t!!.isBefore(windowEnd)
         }
     }
 }

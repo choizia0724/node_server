@@ -77,6 +77,6 @@ class StockItemInfo(
             mrktctg = this.path("mrktCtg").asText(null),
             crno    = this.path("crno").asText(null),
             corpnm  = this.path("corpNm").asText(null),
-            useOrNot = this.path("useOrNot").asBoolean(),
+            useornot = this.path("useornot").asBoolean(),
         )
 }

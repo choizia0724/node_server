@@ -1,10 +1,15 @@
 package com.ziapond.portfolio.project.web
 
 
+import com.ziapond.portfolio.common.domain.StockData
+import com.ziapond.portfolio.common.domain.StockDataResponse
 import com.ziapond.portfolio.common.domain.StockTable
+import com.ziapond.portfolio.common.domain.toResponse
+import com.ziapond.portfolio.common.mappers.StockDataMapper
 import com.ziapond.portfolio.common.mappers.StockListMapper
 import com.ziapond.portfolio.project.web.dto.PageResponse
 import com.ziapond.portfolio.project.web.dto.Pagination
+import com.ziapond.portfolio.project.web.dto.StockDataRequest
 import com.ziapond.portfolio.project.web.dto.StockSearchRequest
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Value
@@ -23,29 +28,32 @@ import kotlin.math.ceil
 @RestController
 @RequestMapping("/api/stocks")
 class StockSearchController(
-    private val stockMapper: StockListMapper,
+    private val stockListMapper: StockListMapper,
+    private val stockDataMapper: StockDataMapper,
     @Value("\${batch.investor.markets}") val marketsCsv: String,
 ) {
+
     @PostMapping("/search")
     fun search(@RequestBody @Valid req: StockSearchRequest): ResponseEntity<PageResponse<StockTable>> {
         val page  = req.page.coerceAtLeast(1)
         val limit = req.limit.coerceIn(1, 5000)
         val offset = page * limit
 
-        val total: Long = stockMapper.countStocks(
+        val total: Long = stockListMapper.countStocks(
             symbol = req.symbol,
             name = req.name,
-            mrktctg = marketsCsv,
+            mrktctg = req.mrktctg,
+            useornot = req.useornot
         )
 
         val rows: List<StockTable> = if (total > 0)
-            stockMapper.searchStocksPaging(
+            stockListMapper.searchStocksPaging(
                 symbol = req.symbol,
                 name = req.name,
                 mrktctg = req.mrktctg,
                 limit = limit,
                 offset = offset,
-                useOrNot = true,
+                useornot = req.useornot,
             )
         else emptyList()
 
@@ -62,5 +70,17 @@ class StockSearchController(
                 )
             )
         )
+    }
+
+    @PostMapping("/search/{code}")
+    fun searchDetail(@RequestBody @Valid req: StockSearchRequest,
+                     @PathVariable code: String ): ResponseEntity<StockDataResponse> {
+        val rows: List<StockData> = stockDataMapper.getStockData(req.copy(symbol = code))
+        println(rows)
+        val body: StockDataResponse = rows.toResponse(code)
+
+        println(body)
+
+        return ResponseEntity.ok(body)
     }
 }

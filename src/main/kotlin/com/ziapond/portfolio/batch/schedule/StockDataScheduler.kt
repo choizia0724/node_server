@@ -27,8 +27,8 @@ class StockDataScheduler(
         val today = now.toLocalDate()
         if (!calendar.isTradingDay(today)) return
 
-        val windowEnd: LocalTime = snapToHalfHour(now.toLocalTime()) // 09:30, 10:00, ...
-        val windowStart: LocalTime = windowEnd.minusMinutes(30)
+        val windowEnd: LocalDateTime = snapToHalfHour(now.toLocalDateTime()) // 09:30, 10:00, ...
+        val windowStart: LocalDateTime = windowEnd.minusMinutes(30)
 
         // 최근 기준일 기준 KOSPI 심볼 목록
         val kospiSymbols = stockItemInfo.getSymbolsFromDb(null, null, "KOSPI", true)
@@ -51,8 +51,8 @@ class StockDataScheduler(
         val today = now.toLocalDate()
         if (!calendar.isTradingDay(today)) return
 
-        val windowEnd: LocalTime = snapToHalfHour(now.toLocalTime())
-        val windowStart: LocalTime = windowEnd.minusMinutes(30)
+        val windowEnd: LocalDateTime = snapToHalfHour(now.toLocalDateTime())
+        val windowStart: LocalDateTime = windowEnd.minusMinutes(30)
 
         // 최근 기준일 기준 KOSDAQ 심볼 목록
         val kosdaqSymbols = stockItemInfo.getSymbolsFromDb(null, null, "KOSDAQ", true)
@@ -74,8 +74,8 @@ class StockDataScheduler(
         val today = now.toLocalDate()
         if (!calendar.isTradingDay(today)) return
 
-        val windowEnd: LocalTime = snapToHalfHour(now.toLocalTime())
-        val windowStart: LocalTime = windowEnd.minusMinutes(30)
+        val windowEnd: LocalDateTime = snapToHalfHour(now.toLocalDateTime())
+        val windowStart: LocalDateTime = windowEnd.minusMinutes(30)
 
         // 최근 기준일 기준 KOSDAQ 심볼 목록
         val kosdaqSymbols = stockItemInfo.getSymbolsFromDb(null, null, "삼성자산운용", true)
@@ -92,7 +92,7 @@ class StockDataScheduler(
     }
 
 
-    private fun snapToHalfHour(t: LocalTime): LocalTime =
+    private fun snapToHalfHour(t: LocalDateTime): LocalDateTime =
         if (t.minute < 30) t.withMinute(30).withSecond(0)
         else t.withMinute(0).withSecond(0).plusHours(1)
 }

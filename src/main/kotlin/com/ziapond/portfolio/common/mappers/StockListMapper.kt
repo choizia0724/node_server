@@ -23,7 +23,7 @@ interface StockListMapper {
         @Param("symbol") symbol: List<String>?,
         @Param("name") name: String?,
         @Param("mrktctg") mrktctg: String?,
-        @Param("useOrNot") useOrNot: Boolean?,
+        @Param("useornot") useornot: Boolean?,
     ): List<StockTable>
 
     fun searchStocksPaging(
@@ -32,12 +32,13 @@ interface StockListMapper {
         @Param("mrktctg") mrktctg: String?,
         @Param("limit") limit: Int?,
         @Param("offset") offset: Int?,
-        @Param("useOrNot") useOrNot: Boolean?,
+        @Param("useornot") useornot: Boolean?,
     ): List<StockTable>
 
     fun countStocks(
         @Param("symbol") symbol: String?,
         @Param("name") name: String?,
-        @Param("mrktctg") mrktctg: String?
+        @Param("mrktctg") mrktctg: String?,
+        @Param("useornot") useornot: Boolean?,
     ): Long
 }

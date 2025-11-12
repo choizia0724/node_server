@@ -43,9 +43,9 @@ class StockDataBatchController(
             )
         }
 
-        val windowEnd: LocalTime =
-            req.endTime?.let { LocalTime.parse(it) }
-                ?: snapToHalfHour(now.toLocalTime())
+        val windowEnd: LocalDateTime =
+            req.endTime?.let { LocalDateTime.parse(it) }
+                ?: snapToHalfHour(now.toLocalDateTime())
 
         val windowStart = windowEnd.minusMinutes(30)
 
@@ -80,9 +80,9 @@ class StockDataBatchController(
             )
         }
 
-        val windowEnd: LocalTime =
-            req.endTime?.let { LocalTime.parse(it) }
-                ?: snapToHalfHour(now.toLocalTime())
+        val windowEnd: LocalDateTime =
+            req.endTime?.let { LocalDateTime.parse(it) }
+                ?: snapToHalfHour(now.toLocalDateTime())
 
         val windowStart = windowEnd.minusMinutes(30)
 
@@ -118,9 +118,9 @@ class StockDataBatchController(
             )
         }
 
-        val windowEnd: LocalTime =
-            req.endTime?.let { LocalTime.parse(it) }
-                ?: snapToHalfHour(now.toLocalTime())
+        val windowEnd: LocalDateTime =
+            req.endTime?.let { LocalDateTime.parse(it) }
+                ?: snapToHalfHour(now.toLocalDateTime())
 
         val windowStart = windowEnd.minusMinutes(30)
 
@@ -164,7 +164,7 @@ class StockDataBatchController(
             ResponseEntity.status(HttpStatus.CONFLICT).body(body)
         }
     }
-    private fun snapToHalfHour(t: LocalTime): LocalTime =
+    private fun snapToHalfHour(t: LocalDateTime): LocalDateTime =
         if (t.minute < 30) t.withMinute(30).withSecond(0)
         else t.withMinute(0).withSecond(0).plusHours(1)
 }

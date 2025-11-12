@@ -3,6 +3,7 @@ package com.ziapond.portfolio.project.web.dto
 import com.fasterxml.jackson.annotation.JsonFormat
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
+import java.time.LocalDate
 
 /**
  * @fileoverview
@@ -21,11 +22,11 @@ data class StockSearchRequest(
 
     val mrktctg: String? = null,
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val from: java.time.LocalDate? = null,   // 옵션: 기준일 시작
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
+    val from: LocalDate? = null,   // 옵션: 기준일 시작
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val to: java.time.LocalDate? = null,     // 옵션: 기준일 끝
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
+    val to: LocalDate? = null,     // 옵션: 기준일 끝
 
     @field:Min(1)
     val page: Int = 1,
@@ -33,6 +34,6 @@ data class StockSearchRequest(
     @field:Min(1) @field:Max(5000)
     val limit: Int = 20,
 
-    val useOrNot: Boolean? = null
+    val useornot: Boolean? = null
 )
 

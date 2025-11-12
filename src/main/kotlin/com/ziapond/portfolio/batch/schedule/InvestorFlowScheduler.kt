@@ -52,7 +52,7 @@ class InvestorFlowScheduler(
 
     }
 
-    private fun snapToHalfHour(t: LocalTime): LocalTime =
+    private fun snapToHalfHour(t: LocalDateTime): LocalDateTime =
         if (t.minute < 30) t.withMinute(30).withSecond(0)
         else t.withMinute(0).withSecond(0).plusHours(1)
 }

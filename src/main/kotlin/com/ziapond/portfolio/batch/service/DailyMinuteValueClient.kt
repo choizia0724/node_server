@@ -16,8 +16,6 @@ import java.time.format.DateTimeFormatter
  * @copyright 2025,
  */
 
-
-
 @Service
 class DailyMinuteValueClient(
     private val http: KisHttp,
@@ -34,13 +32,14 @@ class DailyMinuteValueClient(
     fun fetchDay(symbol6: String, ymd: LocalDate, time: String?): List<StockDataResponse> {
         val all = mutableListOf<StockDataResponse>()
 
-        val t = when (time?.length) {
+        val lt : LocalTime = when (time?.length) {
             6 -> LocalTime.parse(time, HHMMSS)
             4 -> LocalTime.parse(time, HHMM)
             else -> throw IllegalArgumentException("time must be HHmm or HHmmss: '$time'")
         }
 
-        ymd.atTime(t).atZone(KST).toOffsetDateTime()
+        val t: LocalDateTime = ymd.atTime(lt)                          // ← ymd + time
+        val tKst: LocalDateTime = t.atZone(KST).toLocalDateTime()    // 필요하면 KST 오프셋까지
 
         println("ymd: "+ ymd.format(yyyymmdd) +", t: "+time)
 
@@ -63,12 +62,12 @@ class DailyMinuteValueClient(
         // 응답의 분봉 배열(output2 또는 호환 위치)
         val arr = node!!.path("output2")
 
-        parseRowToStockData(symbol6, ymd, arr)?.let(all::add)
+        parseRowToStockData(symbol6, tKst, arr)?.let(all::add)
 
         return all.toList()
     }
 
-    private fun parseRowToStockData(symbol6: String, ymd: LocalDate, n: JsonNode): StockDataResponse? {
+    private fun parseRowToStockData(symbol6: String, tsKst: LocalDateTime, n: JsonNode): StockDataResponse? {
         fun text(name: String): String? =
             n.path(name).asText().takeIf { it.isNotBlank() }
 
@@ -87,7 +86,6 @@ class DailyMinuteValueClient(
             else -> return null
         }
         if (hh == null || mm == null || ss == null) return null
-        val tsKst = LocalDateTime.of(ymd, LocalTime.of(hh, mm, ss))
 
         // OHLCV
         val open  = text("stck_oprc")?.toBigDecimalOrNull() ?: return null
@@ -96,7 +94,7 @@ class DailyMinuteValueClient(
         val close =  text("stck_prpr")?.toBigDecimalOrNull() ?: return null
         val volume = text("acml_vol")?.toLongOrNull() ?: return null
 
-        val oneTick = MinuteCandleClient.MinuteTick(
+        val oneTick = StockDataResponse.MinuteTick(
             tsKst = tsKst,
             open = open, high = high, low = low, close = close, volume = volume
         )

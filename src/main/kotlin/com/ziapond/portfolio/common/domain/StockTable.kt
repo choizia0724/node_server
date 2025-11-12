@@ -18,5 +18,5 @@ data class StockTable(
     val mrktctg: String,
     val crno: String,
     val corpnm:String,
-    val useOrNot: Boolean
+    val useornot: Boolean
 )

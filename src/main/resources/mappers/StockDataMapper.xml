@@ -24,8 +24,17 @@
         volume  = EXCLUDED.volume
     </insert>
 
-    <select id="getStockData">
-        SELECT * FROM stocks.stock_data
-
+    <select id="getStockData" resultType="com.ziapond.portfolio.common.domain.StockData">
+        SELECT
+            symbol,
+            (bucket_start AT TIME ZONE 'Asia/Seoul') AS bucketStart,
+            "open" AS open, high, low, "close" AS close, volume
+        FROM stocks.stock_data
+        WHERE symbol = #{req.symbol}
+        <if test="req.from != null"> AND bucket_start <![CDATA[>=]]> #{req.from} </if>
+        <if test="req.to != null">   AND bucket_start <![CDATA[<]]>  #{req.to} </if>
+            ORDER BY bucket_start
+        <if test="req.limit != null"> LIMIT #{req.limit} </if>
     </select>
+
 </mapper>
