@@ -89,8 +89,8 @@ class DailyMinuteValueClient(
         val dateStr = text("stck_bsop_date") 
         val timeStr = text("stck_cntg_hour") 
 
-        val date = LocalDate.parse(dateStr, DATE_FMT)
-        val time = LocalTime.parse(timeStr, TIME_FMT)
+        val date = LocalDate.parse(dateStr, yyyymmdd)
+        val time = LocalTime.parse(timeStr, HHMMSS)
 
         val timeToLocalTime = LocalDateTime.of(date, time)
         

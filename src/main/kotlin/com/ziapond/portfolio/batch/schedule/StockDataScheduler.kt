@@ -24,10 +24,12 @@ class StockDataScheduler(
     @Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
     fun runKOSPIHalfHourly() {
         val now = ZonedDateTime.now(KST)
-        val today = now.toLocalDate()
+        val today: LocalDate = now.toLocalDate()
         if (!calendar.isTradingDay(today)) return
 
-        val windowEnd: LocalDateTime = snapToHalfHour(now.toLocalDateTime()) // 09:30, 10:00, ...
+        val snappedTime: LocalDateTime = snapToHalfHour(now.toLocalDateTime())
+
+        val windowEnd: LocalDateTime = LocalDateTime.of(today, snappedTime.toLocalTime())
         val windowStart: LocalDateTime = windowEnd.minusMinutes(30)
 
         // 최근 기준일 기준 KOSPI 심볼 목록
@@ -48,10 +50,12 @@ class StockDataScheduler(
     @Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
     fun runKOSDAQHalfHourly() {
         val now = ZonedDateTime.now(KST)
-        val today = now.toLocalDate()
+        val today: LocalDate = now.toLocalDate()
         if (!calendar.isTradingDay(today)) return
 
-        val windowEnd: LocalDateTime = snapToHalfHour(now.toLocalDateTime())
+        val snappedTime: LocalDateTime = snapToHalfHour(now.toLocalDateTime())
+
+        val windowEnd: LocalDateTime = LocalDateTime.of(today, snappedTime.toLocalTime())
         val windowStart: LocalDateTime = windowEnd.minusMinutes(30)
 
         // 최근 기준일 기준 KOSDAQ 심볼 목록
@@ -71,10 +75,12 @@ class StockDataScheduler(
     @Scheduled(cron = "0 0,30 9-15 * * MON-FRI", zone = "Asia/Seoul")
     fun runKODEXHalfHourly() {
         val now = ZonedDateTime.now(KST)
-        val today = now.toLocalDate()
+        val today: LocalDate = now.toLocalDate()
         if (!calendar.isTradingDay(today)) return
 
-        val windowEnd: LocalDateTime = snapToHalfHour(now.toLocalDateTime())
+        val snappedTime: LocalDateTime = snapToHalfHour(now.toLocalDateTime())
+
+        val windowEnd: LocalDateTime = LocalDateTime.of(today, snappedTime.toLocalTime())
         val windowStart: LocalDateTime = windowEnd.minusMinutes(30)
 
         // 최근 기준일 기준 KOSDAQ 심볼 목록

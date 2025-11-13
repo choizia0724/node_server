@@ -44,7 +44,9 @@ class StockDataBatchController(
         }
 
         val windowEnd: LocalDateTime =
-            req.endTime?.let { LocalDateTime.parse(it) }
+            req.endTime
+                ?.takeIf { it.isNotBlank() }
+                ?.let { LocalDateTime.parse(it) }
                 ?: snapToHalfHour(now.toLocalDateTime())
 
         val windowStart = windowEnd.minusMinutes(30)
@@ -79,9 +81,10 @@ class StockDataBatchController(
                 Aggregate30mResponse(skipped = true, reason = "Holiday or weekend")
             )
         }
-
         val windowEnd: LocalDateTime =
-            req.endTime?.let { LocalDateTime.parse(it) }
+            req.endTime
+                ?.takeIf { it.isNotBlank() }
+                ?.let { LocalDateTime.parse(it) }
                 ?: snapToHalfHour(now.toLocalDateTime())
 
         val windowStart = windowEnd.minusMinutes(30)
@@ -119,7 +122,9 @@ class StockDataBatchController(
         }
 
         val windowEnd: LocalDateTime =
-            req.endTime?.let { LocalDateTime.parse(it) }
+            req.endTime
+                ?.takeIf { it.isNotBlank() }
+                ?.let { LocalDateTime.parse(it) }
                 ?: snapToHalfHour(now.toLocalDateTime())
 
         val windowStart = windowEnd.minusMinutes(30)

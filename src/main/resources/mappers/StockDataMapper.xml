@@ -6,16 +6,31 @@
 <mapper namespace="com.ziapond.portfolio.common.mappers.StockDataMapper">
     <insert id="upsertAll" parameterType="java.util.List">
         INSERT INTO stocks.stock_data(symbol, bucket_start, "open", high, low, "close", volume)
+        SELECT DISTINCT ON (symbol, bucket_start)
+        symbol,
+        bucket_start,
+        "open",
+        high,
+        low,
+        "close",
+        volume
+        FROM (
         VALUES
         <trim suffixOverrides=",">
             <foreach collection="list" item="r">
                 <foreach collection="r.tick" item="t">
                     (#{r.symbol},
                     #{t.tsKst,jdbcType=TIMESTAMP},
-                    #{t.open}, #{t.high}, #{t.low}, #{t.close}, #{t.volume}),
+                    #{t.open},
+                    #{t.high},
+                    #{t.low},
+                    #{t.close},
+                    #{t.volume}),
                 </foreach>
             </foreach>
         </trim>
+        ) AS v(symbol, bucket_start, "open", high, low, "close", volume)
+        ORDER BY symbol, bucket_start
         ON CONFLICT (symbol, bucket_start) DO UPDATE SET
         "open"  = EXCLUDED."open",
         high    = EXCLUDED.high,
@@ -23,6 +38,7 @@
         "close" = EXCLUDED."close",
         volume  = EXCLUDED.volume
     </insert>
+
 
     <select id="getStockData" resultType="com.ziapond.portfolio.common.domain.StockData">
         SELECT
@@ -34,7 +50,6 @@
         <if test="req.from != null"> AND bucket_start <![CDATA[>=]]> #{req.from} </if>
         <if test="req.to != null">   AND bucket_start <![CDATA[<]]>  #{req.to} </if>
             ORDER BY bucket_start
-        <if test="req.limit != null req.limit != ''"> LIMIT #{req.limit} </if>
     </select>
 
 </mapper>

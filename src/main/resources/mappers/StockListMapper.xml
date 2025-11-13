@@ -7,8 +7,11 @@
     <!-- 공통 WHERE 절 -->
     <sql id="stockWhere">
         <where>
-            <if test="symbol != null and symbol != ''">
-                AND symbol = #{symbol}
+            <if test="symbol != null and symbol.size() > 0">
+                AND symbol IN
+                <foreach collection="symbol" item="sym" open="(" separator="," close=")">
+                    #{sym}
+                </foreach>
             </if>
             <if test="name != null and name != ''">
                 AND name ILIKE CONCAT('%', #{name}, '%')
@@ -76,6 +79,7 @@
             ORDER BY basdt DESC
             LIMIT #{limit}
             OFFSET #{offset}
+
     </select>
 
 

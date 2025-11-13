@@ -22,10 +22,10 @@ data class StockSearchRequest(
 
     val mrktctg: String? = null,
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     val from: LocalDate? = null,   // 옵션: 기준일 시작
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     val to: LocalDate? = null,     // 옵션: 기준일 끝
 
     @field:Min(1)

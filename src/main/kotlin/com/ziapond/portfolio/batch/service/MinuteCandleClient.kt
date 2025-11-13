@@ -53,9 +53,21 @@ class MinuteCandleClient(
 
         return nodes.mapNotNull { n ->
             // 시간(HHmmss) 파싱
+            val yyyyMMdd =  n.path("stck_bsop_date").asText()
             val hhmmss = n.path("stck_cntg_hour").asText()
                 .ifBlank { n.path("stck_bsop_time").asText() }
             if (hhmmss.isBlank() || hhmmss.length < 6) return@mapNotNull null
+
+            val date = try {
+                LocalDate.of(
+                    yyyyMMdd.substring(0, 4).toInt(),
+                    yyyyMMdd.substring(4, 6).toInt(),
+                    yyyyMMdd.substring(6, 8).toInt()
+                )
+
+            } catch (_: Exception) {
+                return@mapNotNull null
+            }
 
             val time = try {
                 LocalTime.of(
@@ -67,7 +79,7 @@ class MinuteCandleClient(
                 return@mapNotNull null
             }
 
-            val ts: LocalDateTime = LocalDateTime.of(today, time)
+            val ts: LocalDateTime = LocalDateTime.of(date, time)
 
             // 숫자 필드 파서 (로컬 함수는 값만 반환)
             fun bd(name: String): BigDecimal? =
@@ -90,9 +102,6 @@ class MinuteCandleClient(
                 close = close,
                 volume = volume
             )
-        }.filter { tick ->
-            val t = tick.tsKst
-            t!!.isBefore(windowEnd)
         }
     }
 }
