@@ -52,15 +52,12 @@ const TableWidget = ({ data }: TableWidgetProps) => {
 };
 
 const getStockData = async (filters: {
-  symbol?: string;
-  name?: string;
-  basdt?: string;
-  isincd?: string;
-  mrktctg?: string;
-  crno?: string;
-  corpnm?: string;
-  page?: number;
-  size?: number;
+  symbol?: string,
+  name?: string,
+  mrktctg?: string,
+  page?: number,
+  limit?: number,
+  useornot?: boolean,
 }): Promise<StockResponse> => {
   const res = await axios.post<StockResponse>("/api/stocks/search", filters, {
     headers: {
@@ -82,15 +79,15 @@ export default function Home() {
   });
 
   const [filters, setFilters] = useState({
-    symbol: "",
-    name: "",
-    basdt: "",
-    isincd: "",
-    mrktctg: "KOSPI",
-    crno: "",
-    corpnm: "",
+    // symbol: "",
+    // name: "",
+    // mrktctg: "",
+    // from:"2025-10-13T10:00",
+    // to:"2025-10-13T15:30",
     page: 1,
     limit: 10,
+    mrkctg: "KOSPI",
+    useornot: true,
   });
 
   const handlePageChange = (page: number) => {

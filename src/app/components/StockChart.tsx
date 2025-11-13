@@ -1,83 +1,131 @@
 // components/StockChart.tsx
 "use client";
-import { useEffect, useRef } from "react";
-import {
-    CandlestickSeries,
-    ColorType,
-    CrosshairMode,
-    HistogramSeries,
-    createChart,
-    type ISeriesApi,
-    type UTCTimestamp,
-} from "lightweight-charts";
+
+import dynamic from "next/dynamic";
+import { useMemo } from "react";
+import type { ApexOptions } from "apexcharts";
 import {CandleDTO} from "@/types/candle";
 
+const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-export default function StockChart({ candles }: { candles: CandleDTO[] }) {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
-    const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
-    const chartRef = useRef<ReturnType<typeof createChart> | null>(null);
+type Props = {
+    candles: CandleDTO[];
+    height?: number;
+    theme?: "light" | "dark";
+    className?: string;
+};
 
-    useEffect(() => {
-        if (!containerRef.current) return;
+function toMs(t: unknown) {
+    if (t instanceof Date) return t.getTime();
+    if (typeof t === "number") return t < 1e12 ? t * 1000 : t; // sec→ms
+    const ms = Date.parse(String(t));
+    return Number.isNaN(ms) ? Date.now() : ms;
+}
 
-        const chart = createChart(containerRef.current, {
-            width: containerRef.current.clientWidth,   // 최초 width 지정
-            height: 420,
-            layout: { background: { type: ColorType.Solid, color: "white" }, textColor: "#333" },
-            rightPriceScale: { borderVisible: false },
-            timeScale: { borderVisible: false },
-            crosshair: { mode: CrosshairMode.Normal }, // 1 대신 enum
-        });
-        chartRef.current = chart;
-
-        // v5: addSeries 사용
-        const candle = chart.addSeries(CandlestickSeries, {});
-        const volume = chart.addSeries(HistogramSeries, {
-            priceScaleId: "",                     // 서브 스케일
-            priceFormat: { type: "volume" },      // 볼륨 포맷
-        });
-
-        // 서브 스케일 마진
-        chart.priceScale("").applyOptions({ scaleMargins: { top: 0.8, bottom: 0 } });
-
-        candleSeriesRef.current = candle;
-        volumeSeriesRef.current = volume;
-
-        // 초기 데이터
-        candle.setData(
-            candles.map(({ time, open, high, low, close }) => ({ time, open, high, low, close }))
-        );
-        volume.setData(
-            candles.map(({ time, volume = 0, open, close }) => ({
-                time,
-                value: volume,
-                color: close >= open ? "#26a69a" : "#ef5350",
-            }))
-        );
-
-        const handleResize = () =>
-            chart.applyOptions({ width: containerRef.current!.clientWidth });
-        window.addEventListener("resize", handleResize);
-        // 초기 한 번 반영
-        handleResize();
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-            chart.remove();
-        };
+export default function StockChart({
+                                       candles,
+                                       height = 520,
+                                       theme = "light",
+                                       className,
+                                   }: Props) {
+    const { ohlc, vol, yMin, yMax } = useMemo(() => {
+        console.log(candles)
+        const o = candles.map((c) => ({
+            x: toMs((c as any).tsKst),
+            y: [(c as any).open, (c as any).high, (c as any).low, (c as any).close],
+        }));
+        const v = candles.map((c) => ({
+            x: toMs((c as any).tsKst),
+            y: (c as any).volume ?? 0,
+            fillColor:
+                (c as any).close >= (c as any).open ? "#26a69a" : "#ef5350",
+        }));
+        const lows = candles.map((c) => (c as any).low);
+        const highs = candles.map((c) => (c as any).high);
+        const lo = lows.length ? Math.min(...lows) : 0;
+        const hi = highs.length ? Math.max(...highs) : 1;
+        const pad = (hi - lo) * 0.02;
+        return { ohlc: o, vol: v, yMin: lo - pad, yMax: hi + pad };
     }, [candles]);
 
-    // 실시간 업데이트(원하면 props로 빼서 사용)
-    const updateLastBar = (bar: CandleDTO) => {
-        candleSeriesRef.current?.update(bar);
-        volumeSeriesRef.current?.update({
-            time: bar.time,
-            value: bar.volume ?? 0,
-            color: bar.close >= bar.open ? "#26a69a" : "#ef5350",
-        });
-    };
+    const shared: ApexOptions = useMemo(
+        () => ({
+            chart: {
+                id: "stocks-shared",
+                group: "stocks",
+                animations: { enabled: false },
+                toolbar: {
+                    show: true,
+                    tools: { download: true, selection: true, zoom: true, pan: true, reset: true },
+                },
+                zoom: { enabled: true, type: "x", autoScaleYaxis: true },
+            },
+            theme: { mode: theme },
+            xaxis: { type: "datetime", tooltip: { enabled: false } },
+            grid: { strokeDashArray: 3 },
+            tooltip: { shared: false, followCursor: true },
+        }),
+        [theme]
+    );
 
-    return <div ref={containerRef} className="w-full" />;
+    const candleOptions: ApexOptions = useMemo(
+        () => ({
+            ...shared,
+            chart: { ...shared.chart!, type: "candlestick", height: Math.round(height * 0.7) },
+            yaxis: { tooltip: { enabled: true }, min: yMin, max: yMax },
+            plotOptions: {
+                candlestick: {
+                    colors: { upward: "#26a69a", downward: "#ef5350" },
+                    wick: { useFillColor: true },
+                },
+            },
+        }),
+        [shared, height, yMin, yMax]
+    );
+
+    const volumeOptions: ApexOptions = useMemo(
+        () => ({
+            ...shared,
+            chart: { ...shared.chart!, type: "bar", height: Math.round(height * 0.3), toolbar: { show: false } },
+            yaxis: {
+                decimalsInFloat: 0,
+                labels: {
+                    formatter: (v: number) =>
+                        v >= 1_000_000 ? `${Math.round(v / 1_000_000)}M` :
+                            v >= 1_000 ? `${Math.round(v / 1_000)}K` : `${v}`,
+                },
+            },
+            plotOptions: { bar: { columnWidth: "75%" } },
+            dataLabels: { enabled: false },
+            stroke: { show: false },
+            tooltip: { y: { formatter: (v: number) => `${v?.toLocaleString?.() ?? v}` } },
+        }),
+        [shared, height]
+    );
+
+    if (!candles?.length) {
+        return (
+            <div className={`w-full rounded-xl border p-6 text-sm text-gray-500 ${className ?? ""}`}>
+                표시할 캔들 데이터가 없습니다.
+            </div>
+        );
+    }
+
+    return (
+        <div className={`w-full ${className ?? ""}`}>
+            <ReactApexChart
+                options={candleOptions}
+                series={[{ name: "OHLC", type: "candlestick", data: ohlc }]}
+                type="candlestick"
+                height={Math.round(height * 0.7)}
+            />
+            <div className="-mt-2" />
+            <ReactApexChart
+                options={volumeOptions}
+                series={[{ name: "Volume", type: "bar", data: vol }]}
+                type="bar"
+                height={Math.round(height * 0.3)}
+            />
+        </div>
+    );
 }

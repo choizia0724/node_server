@@ -26,13 +26,12 @@ const getDailyData = async (url:string, body:any, array:CandleDTO[]) => {
             }
         }
     ).then((res:any)=>{
-        console.log(res)
         const sorted = res.data.output2.sort((a, b) => {
             return a.stck_bsop_date - b.stck_bsop_date;
         });
         sorted.map((d: any) => (
             array.push({
-                time: toUtcSec(d.stck_bsop_date, d.stck_cntg_hour||"000000"),
+                tsKst: toUtcSec(d.stck_bsop_date, d.stck_cntg_hour||"000000"),
                 open: Number(d.stck_oprc),
                 high: Number(d.stck_hgpr),
                 low: Number(d.stck_lwpr),
