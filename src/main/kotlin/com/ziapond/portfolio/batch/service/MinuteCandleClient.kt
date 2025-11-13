@@ -67,7 +67,7 @@ class MinuteCandleClient(
                 return@mapNotNull null
             }
 
-            val ts: LocalDateTime = ZonedDateTime.of(today, time, KST).toLocalDateTime()
+            val ts: LocalDateTime = LocalDateTime.of(today, time)
 
             // 숫자 필드 파서 (로컬 함수는 값만 반환)
             fun bd(name: String): BigDecimal? =
