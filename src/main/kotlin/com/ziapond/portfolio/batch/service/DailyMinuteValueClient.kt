@@ -38,8 +38,7 @@ class DailyMinuteValueClient(
             else -> throw IllegalArgumentException("time must be HHmm or HHmmss: '$time'")
         }
 
-        val t: LocalDateTime = ymd.atTime(lt)                          // ← ymd + time
-        val tKst: LocalDateTime = t.atZone(KST).toLocalDateTime()    // 필요하면 KST 오프셋까지
+        val tKst: LocalDateTime = ymd.atTime(lt)                          // ← ymd + time
 
         println("ymd: "+ ymd.format(yyyymmdd) +", t: "+time)
 
