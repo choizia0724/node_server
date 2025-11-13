@@ -56,6 +56,9 @@ kis:
   search-stock-info:      # 주식기본조회
     path: /uapi/domestic-stock/v1/quotations/search-stock-info
     tr-id: CTPF1002R
+  inquire-balance:        # 주식잔고조회
+    path: /uapi/domestic-stock/v1/trading/inquire-balance
+    tr-id: TTTC8434R
   oauth:
     rest-token-path: /oauth2/tokenP
     ws-token-path: /oauth2/Approval
