@@ -86,7 +86,15 @@ class DailyMinuteValueClient(
             else -> return null
         }
         if (hh == null || mm == null || ss == null) return null
+        // Time
+        val dateStr = text("stck_bsop_date") 
+        val timeStr = text("stck_cntg_hour") 
 
+        val date = LocalDate.parse(dateStr, DATE_FMT)
+        val time = LocalTime.parse(timeStr, TIME_FMT)
+
+        val timeToLocalTime = LocalDateTime.of(date, time)
+        
         // OHLCV
         val open  = text("stck_oprc")?.toBigDecimalOrNull() ?: return null
         val high  = text("stck_hgpr")?.toBigDecimalOrNull() ?: return null
@@ -95,7 +103,7 @@ class DailyMinuteValueClient(
         val volume = text("acml_vol")?.toLongOrNull() ?: return null
 
         val oneTick = StockDataResponse.MinuteTick(
-            tsKst = tsKst,
+            tsKst = timeToLocalTime,
             open = open, high = high, low = low, close = close, volume = volume
         )
 
