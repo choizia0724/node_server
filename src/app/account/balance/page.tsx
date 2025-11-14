@@ -13,7 +13,6 @@ type AccountPreset = {
     acntPrdtCd: string;
 };
 
-// 여기 배열만 너 계좌에 맞게 수정해서 쓰면 됨
 const ACCOUNT_PRESETS: AccountPreset[] = [
     {
         title: "일반계좌",
@@ -28,8 +27,6 @@ const ACCOUNT_PRESETS: AccountPreset[] = [
         cano: "43486792",
         acntPrdtCd: "01"
     }
-    // 필요하면 이런 식으로 추가
-    // { title: "ISA 계좌", cano: "12345678", acntPrdtCd: "01" },
 ];
 
 export default function AccountBalancePage() {
