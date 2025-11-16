@@ -40,7 +40,7 @@ export default async function getStockData(
         throw new Error("NEXT_PUBLIC_API_BASE 환경변수가 설정되어 있지 않습니다.");
     }
 
-    const url = `${base}/api/stocks/search/${code}`;
+    const url = `/api/stocks/search/${code}`;
 
     const fromStr = toDateTimeString(from);
     const toStr = toDateTimeString(to);

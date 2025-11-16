@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {Fragment, useEffect, useState} from "react";
 import { getKisBalance } from "@/lib/getKisBalance";
 import type {
     KisInquireBalanceResponse,
     KisInquireBalancePosition,
 } from "@/types/kisBalanceTypes";
+import getStockData from "@/lib/getStockData";
+import {CandleDTO} from "@/types/candle";
+import StockChart from "@/app/components/StockChart";
 
 type AccountPreset = {
     title: string;
@@ -18,11 +21,12 @@ const ACCOUNT_PRESETS: AccountPreset[] = [
         title: "일반계좌",
         cano: "73449068",
         acntPrdtCd: "01",
-    },{
-        title: "ISA계좌",
-        cano: "43486792",
-        acntPrdtCd: "01"
-    }
+    },
+    // {
+    //     title: "ISA계좌",
+    //     cano: "43486792",
+    //     acntPrdtCd: "01"
+    // }
 ];
 
 export default function AccountBalancePage() {
@@ -184,6 +188,11 @@ function PositionsTable({
                         }: {
     positions: KisInquireBalancePosition[];
 }) {
+    const [expandedCode, setExpandedCode] = useState<string | null>(null);
+    const [chartData, setChartData] = useState<Record<string, CandleDTO[]>>({});
+    const [loadingCode, setLoadingCode] = useState<string | null>(null);
+    const [errorCode, setErrorCode] = useState<string | null>(null);
+
     if (!positions.length) {
         return (
             <section className="bg-white border rounded-xl p-4 shadow-sm">
@@ -192,6 +201,39 @@ function PositionsTable({
             </section>
         );
     }
+
+    const handleToggleRow = async (code: string) => {
+        // 이미 펼쳐져 있으면 닫기
+        if (expandedCode === code) {
+            setExpandedCode(null);
+            setErrorCode(null);
+            return;
+        }
+
+        // 새로 펼치기
+        setExpandedCode(code);
+        setErrorCode(null);
+
+        // 이미 데이터가 있으면 다시 fetch 안 하고 그대로 사용
+        if (chartData[code]) return;
+
+        try {
+            setLoadingCode(code);
+
+            // 최근 1주일 범위 계산
+            const now = new Date();
+            const from = new Date(now);
+            from.setDate(now.getDate() - 7);
+
+            const candles = await getStockData(code, from, now);
+            setChartData((prev) => ({ ...prev, [code]: candles }));
+        } catch (e: any) {
+            console.error("차트 데이터 조회 실패:", e);
+            setErrorCode(code);
+        } finally {
+            setLoadingCode(null);
+        }
+    };
 
     return (
         <section className="bg-white border rounded-xl p-4 shadow-sm overflow-x-auto">
@@ -209,26 +251,84 @@ function PositionsTable({
                 </tr>
                 </thead>
                 <tbody>
-                {positions.map((p) => (
-                    <tr key={p.pdno} className="border-t hover:bg-gray-50">
-                        <Td>{p.pdno}</Td>
-                        <Td>{p.prdt_name}</Td>
-                        <Td align="right">{formatNumber(p.hldg_qty)}</Td>
-                        <Td align="right">{formatNumber(p.pchs_avg_pric)}</Td>
-                        <Td align="right">{formatNumber(p.prpr)}</Td>
-                        <Td align="right" className={numberClass(p.evlu_pfls_amt)}>
-                            {formatNumber(p.evlu_pfls_amt)}
-                        </Td>
-                        <Td align="right" className={numberClass(p.evlu_pfls_rt)}>
-                            {p.evlu_pfls_rt} %
-                        </Td>
-                    </tr>
-                ))}
+                {positions.map((p) => {
+                    const isExpanded = expandedCode === p.pdno;
+                    const candles = chartData[p.pdno];
+
+                    return (
+                        <Fragment key={p.pdno}>
+                            {/* 기본 행 */}
+                            <tr className="border-t hover:bg-gray-50">
+                                <Td>{p.pdno}</Td>
+                                <Td>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleToggleRow(p.pdno)}
+                                        className="text-left w-full hover:underline text-blue-600"
+                                    >
+                                        {p.prdt_name}
+                                    </button>
+                                </Td>
+                                <Td align="right">{formatNumber(p.hldg_qty)}</Td>
+                                <Td align="right">{formatNumber(p.pchs_avg_pric)}</Td>
+                                <Td align="right">{formatNumber(p.prpr)}</Td>
+                                <Td
+                                    align="right"
+                                    className={numberClass(p.evlu_pfls_amt)}
+                                >
+                                    {formatNumber(p.evlu_pfls_amt)}
+                                </Td>
+                                <Td
+                                    align="right"
+                                    className={numberClass(p.evlu_pfls_rt)}
+                                >
+                                    {p.evlu_pfls_rt} %
+                                </Td>
+                            </tr>
+
+                            {/* 확장 행 (차트 영역) */}
+                            {isExpanded && (
+                                <tr className="border-t bg-gray-50">
+                                    <td colSpan={7} className="p-3">
+                                        {loadingCode === p.pdno && (
+                                            <div className="text-xs text-gray-500">
+                                                차트 데이터를 불러오는 중입니다...
+                                            </div>
+                                        )}
+
+                                        {errorCode === p.pdno && (
+                                            <div className="text-xs text-red-500 mb-2">
+                                                차트 데이터를 가져오는 중 오류가 발생했습니다.
+                                            </div>
+                                        )}
+
+                                        {candles && candles.length > 0 && (
+                                            <div className="mt-2">
+                                                <StockChart
+                                                    candles={candles}
+                                                    height={360}
+                                                    theme="light"
+                                                />
+                                            </div>
+                                        )}
+
+                                        {candles && candles.length === 0 && (
+                                            <div className="text-xs text-gray-500">
+                                                최근 1주일 간 차트 데이터가 없습니다.
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                            )}
+                        </Fragment>
+                    );
+                })}
                 </tbody>
             </table>
         </section>
     );
 }
+
 
 function Th({
                 children,
