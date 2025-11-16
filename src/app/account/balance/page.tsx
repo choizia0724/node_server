@@ -19,10 +19,6 @@ const ACCOUNT_PRESETS: AccountPreset[] = [
         cano: "73449068",
         acntPrdtCd: "01",
     },{
-        title: "금계좌",
-        cano: "43483173",
-        acntPrdtCd: "01"
-    },{
         title: "ISA계좌",
         cano: "43486792",
         acntPrdtCd: "01"
@@ -66,7 +62,6 @@ export default function AccountBalancePage() {
         if (ACCOUNT_PRESETS.length > 0) {
             loadAccount(0);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

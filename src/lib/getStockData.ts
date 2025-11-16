@@ -1,59 +1,90 @@
 // lib/getStockData.ts
-import "server-only";
-import {CandleDTO} from "@/types/candle";
-import {stockSearchRequest} from "@/types/stockSearchRequest";
-/**
- * 코드별 일봉 캔들 데이터를 받아옵니다.
- * API 응답이 CandlesDTO[] 그대로라면 그대로 반환하고,
- * { items: CandlesDTO[] } / { data: CandlesDTO[] } 형태도 허용합니다.
- */
-export default async function getStockData(code: string): Promise<CandleDTO[]> {
-    const url = process.env.NEXT_PUBLIC_API_BASE + "/api/stocks/search/"+code
+import { CandleDTO } from "@/types/candle";
+import { stockSearchRequest } from "@/types/stockSearchRequest";
 
-    function yyyymmdd(d = new Date()) {
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, "0");
-        const dd = String(d.getDate()).padStart(2, "0");
-        return `${yyyy}-${mm}-${dd} 00:00:00`;
+/**
+ * Date | number(ms) | string 을 "yyyy-MM-dd HH:mm:ss" 형태로 변환.
+ */
+function toDateTimeString(input: Date | number | string): string {
+    if (typeof input === "string") return input;
+
+    const d =
+        input instanceof Date
+            ? input
+            : new Date(input); // number(ms) → Date
+
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mi = String(d.getMinutes()).padStart(2, "0");
+    const ss = String(d.getSeconds()).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+}
+
+/**
+ * 코드별 캔들 데이터를 받아옵니다.
+ *
+ * @param code 종목 코드
+ * @param from 조회 시작 시각 (Date | 타임스탬프(ms) | "yyyy-MM-dd HH:mm:ss")
+ * @param to   조회 종료 시각 (Date | 타임스탬프(ms) | "yyyy-MM-dd HH:mm:ss")
+ */
+export default async function getStockData(
+    code: string,
+    from: Date | number | string,
+    to: Date | number | string
+): Promise<CandleDTO[]> {
+    const base = process.env.NEXT_PUBLIC_API_BASE;
+    if (!base) {
+        throw new Error("NEXT_PUBLIC_API_BASE 환경변수가 설정되어 있지 않습니다.");
     }
 
-    const now = new Date();
-    const today = yyyymmdd(now);
+    const url = `${base}/api/stocks/search/${code}`;
 
-    const yesterdayDate = new Date(now);
-    yesterdayDate.setDate(now.getDate() - 2);
-    const yesterday = yyyymmdd(yesterdayDate);
-    //console.log("yesterday: "+yesterday+", today: "+today)
+    const fromStr = toDateTimeString(from);
+    const toStr = toDateTimeString(to);
 
     const body: stockSearchRequest = {
         symbol: code,
         name: "",
         mrktctg: "",
-        from: yesterday,
-        to: today,
+        from: fromStr,
+        to: toStr,
         page: 1,
-        useornot: true
+        useornot: true,
     };
-    console.log(body)
 
-    const res = await fetch(url, {
+    console.log("[getStockData] body:", body);
+
+    // 서버/클라 둘 다에서 쓰고 싶기 때문에
+    // next: { revalidate } 옵션은 서버에서만 넣도록 분기
+    const isServer = typeof window === "undefined";
+
+    const fetchInit: RequestInit & {
+        next?: { revalidate: number };
+    } = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-        // 일봉은 수분 캐시 권장(원하면 조정)
-        next: { revalidate: 300 },
-    });
+    };
 
-    console.log(res)
+    if (isServer) {
+        fetchInit.next = { revalidate: 300 }; // 서버에서만 의미 있음
+    }
+
+    const res = await fetch(url, fetchInit as any);
+
     if (!res.ok) {
         const msg = await res.text().catch(() => "");
-        throw new Error(`getStockData failed: ${res.status} ${res.statusText} ${msg}`);
+        throw new Error(
+            `getStockData failed: ${res.status} ${res.statusText} ${msg}`
+        );
     }
 
     const data = await res.json();
-    console.log(data)
-    const rows: unknown =
-        Array.isArray(data) ? data : data?.tick;
+    console.log("[getStockData] response:", data);
 
+    const rows: unknown = Array.isArray(data) ? data : data?.tick;
     return rows as CandleDTO[];
 }

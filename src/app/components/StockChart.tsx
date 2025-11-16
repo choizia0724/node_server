@@ -13,7 +13,10 @@ type Props = {
     height?: number;
     theme?: "light" | "dark";
     className?: string;
+    onRangeChange?: (range: { from: number; to: number }) => void;
 };
+
+
 
 function toMs(t: unknown) {
     if (t instanceof Date) return t.getTime();
@@ -56,17 +59,45 @@ export default function StockChart({
                 animations: { enabled: false },
                 toolbar: {
                     show: true,
-                    tools: { download: true, selection: true, zoom: true, pan: true, reset: true },
+                    tools: {
+                        download: true,
+                        selection: true,
+                        zoom: true,
+                        pan: true,
+                        reset: true,
+                    },
                 },
                 zoom: { enabled: true, type: "x", autoScaleYaxis: true },
             },
             theme: { mode: theme },
-            xaxis: { type: "datetime", tooltip: { enabled: false } },
+            xaxis: {
+                type: "datetime",
+                tooltip: { enabled: false },
+                labels: {
+
+                    datetimeUTC: false as any,
+                    formatter: (value: string) => {
+
+                        const ts = Number(value);
+                        if (!Number.isFinite(ts)) return value;
+
+                        const d = new Date(ts); // 브라우저 로컬 타임(KST) 기준
+                        return d.toLocaleString("ko-KR", {
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                        });
+                    },
+                },
+            },
             grid: { strokeDashArray: 3 },
             tooltip: { shared: false, followCursor: true },
         }),
         [theme]
     );
+
 
     const candleOptions: ApexOptions = useMemo(
         () => ({
